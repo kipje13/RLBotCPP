@@ -34,6 +34,20 @@ void Renderer::DrawPolyLine3D(Color color, std::vector<const rlbot::flat::Vector
 	}
 }
 
+void Renderer::DrawString2D(std::string text, Color color, rlbot::flat::Vector3 upperLeft, int scaleX, int scaleY)
+{
+	auto colorbuilder = rlbot::flat::ColorBuilder(flatBufferBuilder);
+	colorbuilder.add_a(color.a);
+	colorbuilder.add_r(color.r);
+	colorbuilder.add_g(color.g);
+	colorbuilder.add_b(color.b);
+	auto coloroffset = colorbuilder.Finish();
+
+	auto stringoffset = flatBufferBuilder.CreateString(text);
+
+	renderMessages.push_back(rlbot::flat::CreateRenderMessage(flatBufferBuilder, rlbot::flat::RenderType_DrawString2D, coloroffset, &upperLeft, 0, scaleX, scaleY, stringoffset));
+}
+
 void Renderer::Finish()
 {
 	auto messageoffsets = flatBufferBuilder.CreateVector(renderMessages);

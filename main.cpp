@@ -74,6 +74,8 @@ Controller GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket)
 	}
 
 	renderer.DrawPolyLine3D(Color{0xFF, 0x00, 0x00, 0xFF}, points);
+
+	renderer.DrawString2D("Hello world!", Color{ 0x00, 0xFF, 0x00, 0xFF }, rlbot::flat::Vector3{10,10,0}, 4, 4);
 	
 	renderer.FinishAndSend();
 
