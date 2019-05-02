@@ -12,5 +12,7 @@ public:
 
 	Bot(int index, int team, std::string name);
 	virtual Controller GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket);
+
+protected:
 	const rlbot::flat::FieldInfo* GetFieldInfo();
 };

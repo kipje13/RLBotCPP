@@ -9,7 +9,7 @@ Bot::Bot(int _index, int _team, std::string _name)
 	name = _name;
 }
 
-Controller Bot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPacket)
+Controller Bot::GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket)
 {
 	return Controller{ 0 };
 }
