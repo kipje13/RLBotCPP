@@ -1,6 +1,7 @@
 #include "examplebot.h"
 
 #include <math.h>
+#include <string>
 
 #include "bot.h"
 #include "interface.h"
@@ -18,9 +19,17 @@ Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPac
 {
 	Controller controller{ 0 };
 
+	
+
 	rlbot::flat::Vector3 ballLocation = *gameTickPacket->ball()->physics()->location();
+	rlbot::flat::Vector3 ballVelocity = *gameTickPacket->ball()->physics()->velocity();
 	rlbot::flat::Vector3 carLocation = *gameTickPacket->players()->Get(index)->physics()->location();
 	rlbot::flat::Rotator carRotation = *gameTickPacket->players()->Get(index)->physics()->rotation();
+
+	float velocity = sqrt(
+		ballVelocity.x() * ballVelocity.x() +
+		ballVelocity.y() * ballVelocity.y() + 
+		ballVelocity.z() * ballVelocity.z());
 
 	NamedRenderer renderer("test");
 
@@ -40,6 +49,7 @@ Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPac
 	renderer.DrawPolyLine3D(Color{ 0xFF, 0x00, 0x00, 0xFF }, points);
 
 	renderer.DrawString2D("Hello world!", Color{ 0x00, 0xFF, 0x00, 0xFF }, rlbot::flat::Vector3{ 10,10,0 }, 4, 4);
+	renderer.DrawString3D(std::to_string(velocity), Color{ 0xFF, 0x00, 0xFF, 0xFF }, ballLocation, 2, 2);
 
 	renderer.FinishAndSend();
 
@@ -62,6 +72,8 @@ Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPac
 		controller.steer = -1;
 
 	controller.throttle = 1.1f;
+
+	
 
 	return controller;
 }

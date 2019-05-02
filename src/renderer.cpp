@@ -43,9 +43,23 @@ void Renderer::DrawString2D(std::string text, Color color, rlbot::flat::Vector3 
 	colorbuilder.add_b(color.b);
 	auto coloroffset = colorbuilder.Finish();
 
-	auto stringoffset = flatBufferBuilder.CreateString(text);
+	auto stringoffset = flatBufferBuilder.CreateString(text.c_str());
 
 	renderMessages.push_back(rlbot::flat::CreateRenderMessage(flatBufferBuilder, rlbot::flat::RenderType_DrawString2D, coloroffset, &upperLeft, 0, scaleX, scaleY, stringoffset));
+}
+
+void Renderer::DrawString3D(std::string text, Color color, rlbot::flat::Vector3 upperLeft, int scaleX, int scaleY)
+{
+	auto colorbuilder = rlbot::flat::ColorBuilder(flatBufferBuilder);
+	colorbuilder.add_a(color.a);
+	colorbuilder.add_r(color.r);
+	colorbuilder.add_g(color.g);
+	colorbuilder.add_b(color.b);
+	auto coloroffset = colorbuilder.Finish();
+
+	auto stringoffset = flatBufferBuilder.CreateString(text.c_str());
+
+	renderMessages.push_back(rlbot::flat::CreateRenderMessage(flatBufferBuilder, rlbot::flat::RenderType_DrawString3D, coloroffset, &upperLeft, 0, scaleX, scaleY, stringoffset));
 }
 
 void Renderer::Finish()
