@@ -13,6 +13,7 @@ typedef int(*SendPacketFunc)(void*, int);
 BoolFunc _isInitialized;
 VoidFunc _free;
 ByteBufferFunc _updateLiveDataPacketFlatbuffer;
+ByteBufferFunc _updateFieldInfoFlatbuffer;
 
 SendPacketFunc _updatePlayerInputFlatbuffer;
 
@@ -23,8 +24,10 @@ void Interface::Init(std::string dll)
 	_isInitialized = (BoolFunc)GetProcAddress(handle, "IsInitialized");
 	_free = (VoidFunc)GetProcAddress(handle, "Free");
 	_updateLiveDataPacketFlatbuffer = (ByteBufferFunc)GetProcAddress(handle, "UpdateLiveDataPacketFlatbuffer");
+	_updateFieldInfoFlatbuffer = (ByteBufferFunc)GetProcAddress(handle, "UpdateFieldInfoFlatbuffer");
 
 	_updatePlayerInputFlatbuffer = (SendPacketFunc)GetProcAddress(handle, "UpdatePlayerInputFlatbuffer");
+
 }
 
 bool Interface::IsInitialized()
@@ -40,6 +43,11 @@ void Interface::Free(void* ptr)
 ByteBuffer Interface::UpdateLiveDataPacketFlatbuffer()
 {
 	return _updateLiveDataPacketFlatbuffer();
+}
+
+ByteBuffer Interface::UpdateFieldInfoFlatbuffer()
+{
+	return _updateFieldInfoFlatbuffer();
 }
 
 int Interface::SetBotInput(Controller input, int index)

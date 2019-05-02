@@ -34,7 +34,8 @@ int main(int argc, char** argv)
 
 		if (lasttime != flatPacket->gameInfo()->secondsElapsed())
 		{
-			Interface::SetBotInput(GetOutput(flatPacket), botIndex);
+			int status = Interface::SetBotInput(GetOutput(flatPacket), botIndex);
+
 			lasttime = flatPacket->gameInfo()->secondsElapsed();
 		}
 		else
@@ -72,7 +73,7 @@ Controller GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket)
 	else
 		controller.steer = -1;
 
-	controller.throttle = 1.0f;
+	controller.throttle = 1.1f;
 
 	return controller;
 }
