@@ -1,6 +1,7 @@
 #include "rlbot_generated.h"
 
 #include "interface.h"
+#include "namedrenderer.h"
 
 #include <windows.h>
 
@@ -56,6 +57,27 @@ Controller GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket)
 	rlbot::flat::Vector3 ballLocation = *gameTickPacket->ball()->physics()->location();
 	rlbot::flat::Vector3 carLocation = *gameTickPacket->players()->Get(botIndex)->physics()->location();
 	rlbot::flat::Rotator carRotation = *gameTickPacket->players()->Get(botIndex)->physics()->rotation();
+
+	NamedRenderer renderer("test");
+
+	ByteBuffer bytebuffer = Interface::GetBallPrediction();
+
+	auto ballprediction = flatbuffers::GetRoot<rlbot::flat::BallPrediction>(bytebuffer.ptr);
+
+	renderer.StartPacket();
+
+	std::vector<const rlbot::flat::Vector3*> points;
+	
+	for (int i = 0; i < ballprediction->slices()->size(); i++)
+	{
+		points.push_back(ballprediction->slices()->Get(i)->physics()->location());
+	}
+
+	renderer.DrawPolyLine3D(Color{0xFF, 0x00, 0x00, 0xFF}, points);
+	
+	renderer.FinishAndSend();
+
+	Interface::Free(bytebuffer.ptr);
 
 
 	// Calculate to get the angle from the front of the bot's car to the ball.

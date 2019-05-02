@@ -14,8 +14,10 @@ BoolFunc _isInitialized;
 VoidFunc _free;
 ByteBufferFunc _updateLiveDataPacketFlatbuffer;
 ByteBufferFunc _updateFieldInfoFlatbuffer;
+ByteBufferFunc _getBallPrediction;
 
 SendPacketFunc _updatePlayerInputFlatbuffer;
+SendPacketFunc _renderGroup;
 
 void Interface::Init(std::string dll)
 {
@@ -23,11 +25,13 @@ void Interface::Init(std::string dll)
 
 	_isInitialized = (BoolFunc)GetProcAddress(handle, "IsInitialized");
 	_free = (VoidFunc)GetProcAddress(handle, "Free");
+
 	_updateLiveDataPacketFlatbuffer = (ByteBufferFunc)GetProcAddress(handle, "UpdateLiveDataPacketFlatbuffer");
 	_updateFieldInfoFlatbuffer = (ByteBufferFunc)GetProcAddress(handle, "UpdateFieldInfoFlatbuffer");
+	_getBallPrediction = (ByteBufferFunc)GetProcAddress(handle, "GetBallPrediction");
 
 	_updatePlayerInputFlatbuffer = (SendPacketFunc)GetProcAddress(handle, "UpdatePlayerInputFlatbuffer");
-
+	_renderGroup = (SendPacketFunc)GetProcAddress(handle, "RenderGroup"); 
 }
 
 bool Interface::IsInitialized()
@@ -48,6 +52,11 @@ ByteBuffer Interface::UpdateLiveDataPacketFlatbuffer()
 ByteBuffer Interface::UpdateFieldInfoFlatbuffer()
 {
 	return _updateFieldInfoFlatbuffer();
+}
+
+ByteBuffer Interface::GetBallPrediction()
+{
+	return _getBallPrediction();
 }
 
 int Interface::SetBotInput(Controller input, int index)
@@ -74,4 +83,9 @@ int Interface::SetBotInput(Controller input, int index)
 	builder.GetSize();
 
 	return _updatePlayerInputFlatbuffer(builder.GetBufferPointer(), builder.GetSize());
+}
+
+int Interface::RenderGroup(void * data, int size)
+{
+	return _renderGroup(data, size);
 }

@@ -30,5 +30,6 @@ public:
 	static ByteBuffer GetBallPrediction();
 
 	static int SetBotInput(Controller input, int index);
+	static int RenderGroup(void* data, int size);
 	//static int SendQuickChat(int index, bool teamOnly, rlbot::flat::QuickChatSelection message);
 };
