@@ -12,7 +12,7 @@ Bot::Bot(int _index, int _team, std::string _name)
 	name = _name;
 }
 
-Controller Bot::GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket, const rlbot::flat::FieldInfo* fieldInfo)
+Controller Bot::GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket, const rlbot::flat::FieldInfo* fieldInfo, const rlbot::flat::BallPrediction* ballPrediction)
 {
 	return Controller{ 0 };
 }

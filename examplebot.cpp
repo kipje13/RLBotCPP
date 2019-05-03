@@ -15,7 +15,7 @@ ExampleBot::ExampleBot(int _index, int _team, std::string _name) : Bot(_index, _
 	
 }
 
-Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPacket, const rlbot::flat::FieldInfo* fieldInfo)
+Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPacket, const rlbot::flat::FieldInfo* fieldInfo, const rlbot::flat::BallPrediction* ballPrediction)
 {
 	Controller controller{ 0 };
 
@@ -31,17 +31,13 @@ Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPac
 
 	NamedRenderer renderer("test");
 
-	ByteBuffer bytebuffer = Interface::GetBallPrediction();
-
-	auto ballprediction = flatbuffers::GetRoot<rlbot::flat::BallPrediction>(bytebuffer.ptr);
-
 	renderer.StartPacket();
 
 	std::vector<const rlbot::flat::Vector3*> points;
 
-	for (int i = 0; i < ballprediction->slices()->size(); i++)
+	for (int i = 0; i < ballPrediction->slices()->size(); i++)
 	{
-		points.push_back(ballprediction->slices()->Get(i)->physics()->location());
+		points.push_back(ballPrediction->slices()->Get(i)->physics()->location());
 	}
 
 	renderer.DrawPolyLine3D(Color{ 0xFF, 0x00, 0x00, 0xFF }, points);
@@ -50,8 +46,6 @@ Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPac
 	renderer.DrawString3D(std::to_string(velocity), Color{ 0xFF, 0x00, 0xFF, 0xFF }, ballLocation, 2, 2);
 
 	renderer.FinishAndSend();
-
-	Interface::Free(bytebuffer.ptr);
 
 
 	// Calculate to get the angle from the front of the bot's car to the ball.

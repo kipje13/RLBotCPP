@@ -11,8 +11,5 @@ public:
 	std::string name;
 
 	Bot(int index, int team, std::string name);
-	virtual Controller GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket);
-
-protected:
-	const rlbot::flat::FieldInfo* GetFieldInfo();
+	virtual Controller GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket, const rlbot::flat::FieldInfo* fieldInfo, const rlbot::flat::BallPrediction* ballPrediction);
 };

@@ -31,11 +31,15 @@ int main(int argc, char** argv)
 		if (lasttime != gametickpacket->gameInfo()->secondsElapsed())
 		{
 			ByteBuffer fieldInfoData = Interface::UpdateFieldInfoFlatbuffer();
-			const rlbot::flat::FieldInfo *fieldinfo = flatbuffers::GetRoot<rlbot::flat::FieldInfo>(fieldInfoData.ptr);
+			ByteBuffer ballPredictionData = Interface::GetBallPrediction();
 
-			int status = Interface::SetBotInput(examplebot->GetOutput(gametickpacket, fieldinfo), botIndex);
+			const rlbot::flat::FieldInfo *fieldinfo = flatbuffers::GetRoot<rlbot::flat::FieldInfo>(fieldInfoData.ptr);
+			const rlbot::flat::BallPrediction *ballprediction = flatbuffers::GetRoot<rlbot::flat::BallPrediction>(ballPredictionData.ptr);
+
+			int status = Interface::SetBotInput(examplebot->GetOutput(gametickpacket, fieldinfo, ballprediction), botIndex);
 
 			Interface::Free(fieldInfoData.ptr);
+			Interface::Free(ballPredictionData.ptr);
 
 			lasttime = gametickpacket->gameInfo()->secondsElapsed();
 		}
