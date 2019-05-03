@@ -8,12 +8,14 @@
 
 #include <windows.h>
 
-#ifdef _X64
-#define DLLNAME "RLBot_Core_Interface.dll"
+#ifdef _WIN64
+	#define DLLNAME "RLBot_Core_Interface.dll"
 #endif
 
 #ifdef _WIN32
-#define DLLNAME "RLBot_Core_Interface_32.dll"
+	#ifndef _WIN64
+		#define DLLNAME "RLBot_Core_Interface_32.dll"
+	#endif
 #endif
 
 int main(int argc, char** argv)
