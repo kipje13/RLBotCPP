@@ -14,4 +14,4 @@ C++ client for the [RLBot framework](https://github.com/RLBot/RLBot).
 
 This is very much work in progress. Only supports running one bot on a hardcoded index.
 
-No state setting, no quickchat, no ball prediction, no rendering.
+Currently no support for state setting.
