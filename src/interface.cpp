@@ -18,8 +18,9 @@ ByteBufferFunc _getBallPrediction;
 
 SendPacketFunc _updatePlayerInputFlatbuffer;
 SendPacketFunc _renderGroup;
+SendPacketFunc _sendQuickChat;
 
-void Interface::Init(std::string dll)
+void Interface::LoadInterface(std::string dll)
 {
 	HMODULE handle = LoadLibrary(dll.c_str());
 
@@ -32,6 +33,7 @@ void Interface::Init(std::string dll)
 
 	_updatePlayerInputFlatbuffer = (SendPacketFunc)GetProcAddress(handle, "UpdatePlayerInputFlatbuffer");
 	_renderGroup = (SendPacketFunc)GetProcAddress(handle, "RenderGroup"); 
+	_sendQuickChat = (SendPacketFunc)GetProcAddress(handle, "SendQuickChat");
 }
 
 bool Interface::IsInitialized()
@@ -63,7 +65,7 @@ int Interface::SetBotInput(Controller input, int index)
 {
 	flatbuffers::FlatBufferBuilder builder(50);
 
-	flatbuffers::Offset<rlbot::flat::ControllerState> controllerStateOffset = rlbot::flat::CreateControllerState(
+	auto controllerStateOffset = rlbot::flat::CreateControllerState(
 		builder,
 		input.throttle, 
 		input.steer, 
@@ -74,13 +76,12 @@ int Interface::SetBotInput(Controller input, int index)
 		input.boost, 
 		input.handbrake);
 
-	flatbuffers::Offset<rlbot::flat::PlayerInput> playerInputOffset = rlbot::flat::CreatePlayerInput(
+	auto playerInputOffset = rlbot::flat::CreatePlayerInput(
 		builder,
 		index, 
 		controllerStateOffset);
 
 	builder.Finish(playerInputOffset);
-	builder.GetSize();
 
 	return _updatePlayerInputFlatbuffer(builder.GetBufferPointer(), builder.GetSize());
 }
@@ -88,4 +89,14 @@ int Interface::SetBotInput(Controller input, int index)
 int Interface::RenderGroup(void * data, int size)
 {
 	return _renderGroup(data, size);
+}
+
+int Interface::SendQuickChat(rlbot::flat::QuickChatSelection message, int botIndex, bool teamOnly)
+{
+	flatbuffers::FlatBufferBuilder builder(50);
+
+	auto quickChatOffset = rlbot::flat::CreateQuickChat(builder, message, botIndex, teamOnly);
+	builder.Finish(quickChatOffset);
+
+	return _sendQuickChat(builder.GetBufferPointer(), builder.GetSize());
 }

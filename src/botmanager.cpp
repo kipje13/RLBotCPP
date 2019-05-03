@@ -1,9 +1,17 @@
 #include "botmanager.h"
+
 #include "bot.h"
 
-#include "windows.h"
+#include <windows.h>
+
+void botThread(Bot* bot);
 
 void BotManager::RunSingleBot(Bot* bot)
+{
+	botThread(bot);
+}
+
+void botThread(Bot* bot)
 {
 	float lasttime = 0;
 

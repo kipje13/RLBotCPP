@@ -2,7 +2,7 @@
 
 #include "interface.h"
 
-Renderer::Renderer(int index)
+Renderer::Renderer(size_t index)
 {
 	_index = index;
 }

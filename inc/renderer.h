@@ -27,7 +27,7 @@ public:
 	void DrawString3D(std::string text, Color color, rlbot::flat::Vector3 upperLeft, int scaleX, int scaleY);
 
 protected:
-	Renderer(int index);
+	Renderer(size_t index);
 	flatbuffers::FlatBufferBuilder flatBufferBuilder;
 	void Finish();
 	

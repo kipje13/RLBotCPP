@@ -1,4 +1,5 @@
 #pragma once
+#include "rlbot_generated.h"
 
 #include <string>
 
@@ -21,7 +22,7 @@ struct Controller {
 class Interface
 {
 public:
-	static void Init(std::string dll);
+	static void LoadInterface(std::string dll);
 	static bool IsInitialized();
 	static void Free(void* ptr);
 
@@ -31,5 +32,5 @@ public:
 
 	static int SetBotInput(Controller input, int index);
 	static int RenderGroup(void* data, int size);
-	//static int SendQuickChat(int index, bool teamOnly, rlbot::flat::QuickChatSelection message);
+	static int SendQuickChat(rlbot::flat::QuickChatSelection message, int botIndex, bool teamOnly);
 };

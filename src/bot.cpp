@@ -17,4 +17,9 @@ Controller Bot::GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket, con
 	return Controller{ 0 };
 }
 
+void Bot::SendQuickChat(rlbot::flat::QuickChatSelection message, bool teamOnly)
+{
+	Interface::SendQuickChat(message, index, teamOnly);
+}
+
 

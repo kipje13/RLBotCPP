@@ -6,8 +6,6 @@
 #include "botmanager.h"
 #include "interface.h"
 
-#include <windows.h>
-
 #ifdef _WIN64
 	#define DLLNAME "RLBot_Core_Interface.dll"
 #endif
@@ -21,15 +19,17 @@
 int main(int argc, char** argv)
 {
 	int botIndex = 0;
+	int botTeam = 0;
+	std::string botName = "";
 
-	Interface::Init(DLLNAME);
+	Interface::LoadInterface(DLLNAME);
 
 	while (!Interface::IsInitialized())
 	{
 
 	}
 
-	Bot* examplebot = &(ExampleBot(botIndex, 0, ""));
+	Bot* examplebot = &(ExampleBot(botIndex, botTeam, botName));
 
 	BotManager::RunSingleBot(examplebot);
 	
