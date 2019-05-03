@@ -12,14 +12,12 @@
 
 ExampleBot::ExampleBot(int _index, int _team, std::string _name) : Bot(_index, _team, _name)
 {
-
+	
 }
 
-Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPacket)
+Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPacket, const rlbot::flat::FieldInfo* fieldInfo)
 {
 	Controller controller{ 0 };
-
-	
 
 	rlbot::flat::Vector3 ballLocation = *gameTickPacket->ball()->physics()->location();
 	rlbot::flat::Vector3 ballVelocity = *gameTickPacket->ball()->physics()->velocity();

@@ -13,12 +13,12 @@ int main(int argc, char** argv)
 
 	int botIndex = 0;
 
-	Bot* examplebot = &(ExampleBot(botIndex, 0, ""));
-
 	while (!Interface::IsInitialized())
 	{
 
 	}
+
+	Bot* examplebot = &(ExampleBot(botIndex, 0, ""));
 
 	float lasttime = 0;
 
@@ -26,13 +26,18 @@ int main(int argc, char** argv)
 	{
 		ByteBuffer flatbufferData = Interface::UpdateLiveDataPacketFlatbuffer();
 
-		const rlbot::flat::GameTickPacket *flatPacket = flatbuffers::GetRoot<rlbot::flat::GameTickPacket>(flatbufferData.ptr);
+		const rlbot::flat::GameTickPacket *gametickpacket = flatbuffers::GetRoot<rlbot::flat::GameTickPacket>(flatbufferData.ptr);
 
-		if (lasttime != flatPacket->gameInfo()->secondsElapsed())
+		if (lasttime != gametickpacket->gameInfo()->secondsElapsed())
 		{
-			int status = Interface::SetBotInput(examplebot->GetOutput(flatPacket), botIndex);
+			ByteBuffer fieldInfoData = Interface::UpdateFieldInfoFlatbuffer();
+			const rlbot::flat::FieldInfo *fieldinfo = flatbuffers::GetRoot<rlbot::flat::FieldInfo>(fieldInfoData.ptr);
 
-			lasttime = flatPacket->gameInfo()->secondsElapsed();
+			int status = Interface::SetBotInput(examplebot->GetOutput(gametickpacket, fieldinfo), botIndex);
+
+			Interface::Free(fieldInfoData.ptr);
+
+			lasttime = gametickpacket->gameInfo()->secondsElapsed();
 		}
 		else
 		{

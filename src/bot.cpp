@@ -1,6 +1,9 @@
 #include "bot.h"
 
-#include <stdint.h>
+#include <vector>
+
+#include "interface.h"
+#include "rlbot_generated.h"
 
 Bot::Bot(int _index, int _team, std::string _name)
 {
@@ -9,7 +12,7 @@ Bot::Bot(int _index, int _team, std::string _name)
 	name = _name;
 }
 
-Controller Bot::GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket)
+Controller Bot::GetOutput(const rlbot::flat::GameTickPacket* gameTickPacket, const rlbot::flat::FieldInfo* fieldInfo)
 {
 	return Controller{ 0 };
 }
