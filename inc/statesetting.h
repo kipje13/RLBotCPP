@@ -17,10 +17,10 @@ struct DesiredRotator {
 class PhysicsState
 {
 public:
-	DesiredVector3 location;
-	DesiredVector3 velocity;
-	DesiredRotator rotation;
-	DesiredVector3 angularVelocity;
+	std::optional<DesiredVector3> location;
+	std::optional<DesiredVector3> velocity;
+	std::optional<DesiredRotator> rotation;
+	std::optional<DesiredVector3> angularVelocity;
 
 	PhysicsState();
 };
@@ -37,6 +37,7 @@ class CarState
 {
 public:
 	PhysicsState physicsState;
+	std::optional<int> boostAmount;
 };
 
 class GameState

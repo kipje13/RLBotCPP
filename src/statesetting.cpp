@@ -1,8 +1,8 @@
 #include "statesetting.h"
 #include "interface.h"
 
-#define CREATEVECTOR3PARTIAL(name, vector3) flatbuffers::Offset<rlbot::flat::Vector3Partial> name; { auto _x = &rlbot::flat::Float(vector3.x); auto _y = &rlbot::flat::Float(vector3.y); auto _z = &rlbot::flat::Float(vector3.z); name = rlbot::flat::CreateVector3Partial(builder, _x, _y, _z); }
-#define CREATEROTATORPARTIAL(name, rotator) flatbuffers::Offset<rlbot::flat::RotatorPartial> name; { auto _p = &rlbot::flat::Float(rotator.pitch); auto _y = &rlbot::flat::Float(rotator.yaw); auto _r = &rlbot::flat::Float(rotator.roll); name = rlbot::flat::CreateRotatorPartial(builder, _p, _y, _r); }
+#define CREATEVECTOR3PARTIAL(name, vector3) flatbuffers::Offset<rlbot::flat::Vector3Partial> name; if (vector3.has_value()) { auto _x = &rlbot::flat::Float(vector3.value().x); auto _y = &rlbot::flat::Float(vector3.value().y); auto _z = &rlbot::flat::Float(vector3.value().z); name = rlbot::flat::CreateVector3Partial(builder, _x, _y, _z); } else { name = 0; }
+#define CREATEROTATORPARTIAL(name, rotator) flatbuffers::Offset<rlbot::flat::RotatorPartial> name; if (rotator.has_value()) { auto _p = &rlbot::flat::Float(rotator.value().pitch); auto _y = &rlbot::flat::Float(rotator.value().yaw); auto _r = &rlbot::flat::Float(rotator.value().roll); name = rlbot::flat::CreateRotatorPartial(builder, _p, _y, _r); } else { name = 0; }
 
 PhysicsState::PhysicsState()
 {
@@ -39,12 +39,19 @@ void GameState::BuildAndSend()
 			CREATEVECTOR3PARTIAL(carVelocityOffset, carStates[i].value().physicsState.velocity);
 			CREATEVECTOR3PARTIAL(carAngularVelocityOffset, carStates[i].value().physicsState.angularVelocity);
 
+			rlbot::flat::Float* boost;
+
+			if (carStates[i].value().boostAmount.has_value())
+				boost = &rlbot::flat::Float(carStates[i].value().boostAmount.value());
+			else
+				boost = (rlbot::flat::Float*)0;
+
 			auto carPhysicsOffset = rlbot::flat::CreateDesiredPhysics(builder, carLocationOffset, carRotationOffset, carVelocityOffset, carAngularVelocityOffset);
-			cars.push_back(rlbot::flat::CreateDesiredCarState(builder, carPhysicsOffset));
+			cars.push_back(rlbot::flat::CreateDesiredCarState(builder, carPhysicsOffset, boost));
 		}
 		else
 		{
-			// Create a empty car state if this car doesn't have a desired state.
+			// Create an empty car state if this car doesn't have a desired state.
 			cars.push_back(rlbot::flat::CreateDesiredCarState(builder));
 		}
 	}
