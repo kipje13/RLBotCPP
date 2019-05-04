@@ -13,5 +13,3 @@ C++ client for the [RLBot framework](https://github.com/RLBot/RLBot).
 ## NOTES:
 
 This is very much work in progress. Only supports running one bot on a hardcoded index.
-
-Currently no support for state setting.
