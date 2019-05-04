@@ -3,6 +3,9 @@
 #include "flatbuffers/flatbuffers.h"
 #include "rlbot_generated.h"
 
+#include <array>
+#include <optional>
+
 struct DesiredVector3 {
 	float x, y, z;
 };
@@ -32,13 +35,15 @@ public:
 
 class CarState
 {
-
+public:
+	PhysicsState physicsState;
 };
 
 class GameState
 {
 public:
 	BallState ballState;
+	std::array<std::optional<CarState>, 8> carStates;
 
 	GameState();
 	void BuildAndSend();

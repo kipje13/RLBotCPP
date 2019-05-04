@@ -30,6 +30,25 @@ void GameState::BuildAndSend()
 
 	std::vector<flatbuffers::Offset<rlbot::flat::DesiredCarState>> cars;
 
+	for (int i = 0; i < carStates.size(); i++)
+	{
+		if (carStates[i].has_value())
+		{
+			CREATEVECTOR3PARTIAL(carLocationOffset, carStates[i].value().physicsState.location);
+			CREATEROTATORPARTIAL(carRotationOffset, carStates[i].value().physicsState.rotation);
+			CREATEVECTOR3PARTIAL(carVelocityOffset, carStates[i].value().physicsState.velocity);
+			CREATEVECTOR3PARTIAL(carAngularVelocityOffset, carStates[i].value().physicsState.angularVelocity);
+
+			auto carPhysicsOffset = rlbot::flat::CreateDesiredPhysics(builder, carLocationOffset, carRotationOffset, carVelocityOffset, carAngularVelocityOffset);
+			cars.push_back(rlbot::flat::CreateDesiredCarState(builder, carPhysicsOffset));
+		}
+		else
+		{
+			// Create a empty car state if this car doesn't have a desired state.
+			cars.push_back(rlbot::flat::CreateDesiredCarState(builder));
+		}
+	}
+
 	auto carsOffset = builder.CreateVector(cars);
 
 	auto gameStateOffset = rlbot::flat::CreateDesiredGameState(builder, ballStateOffset, carsOffset, 0, 0);

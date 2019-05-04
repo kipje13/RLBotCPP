@@ -15,10 +15,18 @@ ExampleBot::ExampleBot(int _index, int _team, std::string _name) : Bot(_index, _
 {
 	GameState gamestate = GameState();
 
-	gamestate.ballState.physicsState.location = {0, 0, 1000};
+	gamestate.ballState.physicsState.location = { 0, 0, 1000 };
 	gamestate.ballState.physicsState.velocity = { 0, 0, 5000 };
 	gamestate.ballState.physicsState.rotation = { 0, 0, 0 };
 	gamestate.ballState.physicsState.angularVelocity = { 0, 0, 0 };
+
+	CarState carstate = CarState();
+	carstate.physicsState.location = { 0, 500, 1000 };
+	carstate.physicsState.velocity = { 0, 0, 0 };
+	carstate.physicsState.rotation = { 0, 0, 0 };
+	carstate.physicsState.angularVelocity = { 0, 5, 0 };
+
+	gamestate.carStates[_index] = carstate;
 
 	gamestate.BuildAndSend();
 }
