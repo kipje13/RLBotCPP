@@ -33,4 +33,5 @@ public:
 	static int SetBotInput(Controller input, int index);
 	static int RenderGroup(void* data, int size);
 	static int SendQuickChat(rlbot::flat::QuickChatSelection message, int botIndex, bool teamOnly);
+	static int SetGameState(void* data, int size);
 };

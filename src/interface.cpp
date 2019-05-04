@@ -12,6 +12,7 @@ typedef int(*SendPacketFunc)(void*, int);
 
 BoolFunc _isInitialized;
 VoidFunc _free;
+
 ByteBufferFunc _updateLiveDataPacketFlatbuffer;
 ByteBufferFunc _updateFieldInfoFlatbuffer;
 ByteBufferFunc _getBallPrediction;
@@ -19,6 +20,7 @@ ByteBufferFunc _getBallPrediction;
 SendPacketFunc _updatePlayerInputFlatbuffer;
 SendPacketFunc _renderGroup;
 SendPacketFunc _sendQuickChat;
+SendPacketFunc _setGameState;
 
 void Interface::LoadInterface(std::string dll)
 {
@@ -34,6 +36,7 @@ void Interface::LoadInterface(std::string dll)
 	_updatePlayerInputFlatbuffer = (SendPacketFunc)GetProcAddress(handle, "UpdatePlayerInputFlatbuffer");
 	_renderGroup = (SendPacketFunc)GetProcAddress(handle, "RenderGroup"); 
 	_sendQuickChat = (SendPacketFunc)GetProcAddress(handle, "SendQuickChat");
+	_setGameState = (SendPacketFunc)GetProcAddress(handle, "SetGameState");
 }
 
 bool Interface::IsInitialized()
@@ -99,4 +102,9 @@ int Interface::SendQuickChat(rlbot::flat::QuickChatSelection message, int botInd
 	builder.Finish(quickChatOffset);
 
 	return _sendQuickChat(builder.GetBufferPointer(), builder.GetSize());
+}
+
+int Interface::SetGameState(void * data, int size)
+{
+	return _setGameState(data, size);
 }

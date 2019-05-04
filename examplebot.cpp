@@ -4,6 +4,7 @@
 #include <string>
 
 #include "bot.h"
+#include "statesetting.h"
 #include "interface.h"
 #include "namedrenderer.h"
 #include "rlbot_generated.h"
@@ -12,7 +13,14 @@
 
 ExampleBot::ExampleBot(int _index, int _team, std::string _name) : Bot(_index, _team, _name)
 {
-	
+	GameState gamestate = GameState();
+
+	gamestate.ballState.physicsState.location = {0, 0, 1000};
+	gamestate.ballState.physicsState.velocity = { 0, 0, 5000 };
+	gamestate.ballState.physicsState.rotation = { 0, 0, 0 };
+	gamestate.ballState.physicsState.angularVelocity = { 0, 0, 0 };
+
+	gamestate.BuildAndSend();
 }
 
 Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPacket, const rlbot::flat::FieldInfo* fieldInfo, const rlbot::flat::BallPrediction* ballPrediction)
@@ -63,9 +71,7 @@ Controller ExampleBot::GetOutput(const rlbot::flat::GameTickPacket * gameTickPac
 	else
 		controller.steer = -1;
 
-	controller.throttle = 1.1f;
-
-	
+	controller.throttle = 1.0f;
 
 	return controller;
 }
