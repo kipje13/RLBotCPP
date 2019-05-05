@@ -7,45 +7,41 @@
 #include <optional>
 
 struct DesiredVector3 {
-	float x, y, z;
+  float x, y, z;
 };
 
 struct DesiredRotator {
-	float pitch, yaw, roll;
+  float pitch, yaw, roll;
 };
 
-class PhysicsState
-{
-public:
-	std::optional<DesiredVector3> location;
-	std::optional<DesiredVector3> velocity;
-	std::optional<DesiredRotator> rotation;
-	std::optional<DesiredVector3> angularVelocity;
+class PhysicsState {
+ public:
+  std::optional<DesiredVector3> location;
+  std::optional<DesiredVector3> velocity;
+  std::optional<DesiredRotator> rotation;
+  std::optional<DesiredVector3> angularVelocity;
 
-	PhysicsState();
+  PhysicsState();
 };
 
-class BallState
-{
-public:
-	PhysicsState physicsState;
+class BallState {
+ public:
+  PhysicsState physicsState;
 
-	BallState();
+  BallState();
 };
 
-class CarState
-{
-public:
-	PhysicsState physicsState;
-	std::optional<int> boostAmount;
+class CarState {
+ public:
+  PhysicsState physicsState;
+  std::optional<int> boostAmount;
 };
 
-class GameState
-{
-public:
-	BallState ballState;
-	std::array<std::optional<CarState>, 8> carStates;
+class GameState {
+ public:
+  BallState ballState;
+  std::array<std::optional<CarState>, 8> carStates;
 
-	GameState();
-	void BuildAndSend();
+  GameState();
+  void BuildAndSend();
 };

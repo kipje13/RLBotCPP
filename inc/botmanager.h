@@ -2,10 +2,8 @@
 
 #include "bot.h"
 
-class BotManager
-{
-public:
-	static void RunSingleBot(Bot* bot);
+class BotManager {
+ public:
+  static void RunSingleBot(Bot* bot);
 };
-
 

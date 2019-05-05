@@ -25,18 +25,18 @@
 #include <sstream>
 #include <string>
 #ifdef _WIN32
-#  ifndef WIN32_LEAN_AND_MEAN
-#    define WIN32_LEAN_AND_MEAN
-#  endif
-#  ifndef NOMINMAX
-#    define NOMINMAX
-#  endif
-#  include <windows.h>  // Must be included before <direct.h>
-#  include <direct.h>
-#  include <winbase.h>
-#  undef interface  // This is also important because of reasons
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <direct.h>
+#include <winbase.h>
+#include <windows.h>  // Must be included before <direct.h>
+#undef interface      // This is also important because of reasons
 #else
-#  include <limits.h>
+#include <limits.h>
 #endif
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -48,26 +48,30 @@ namespace flatbuffers {
 // Convert an integer or floating point value to a string.
 // In contrast to std::stringstream, "char" values are
 // converted to a string of digits, and we don't use scientific notation.
-template<typename T> std::string NumToString(T t) {
+template <typename T>
+std::string NumToString(T t) {
   std::stringstream ss;
   ss << t;
   return ss.str();
 }
 // Avoid char types used as character data.
-template<> inline std::string NumToString<signed char>(signed char t) {
+template <>
+inline std::string NumToString<signed char>(signed char t) {
   return NumToString(static_cast<int>(t));
 }
-template<> inline std::string NumToString<unsigned char>(unsigned char t) {
+template <>
+inline std::string NumToString<unsigned char>(unsigned char t) {
   return NumToString(static_cast<int>(t));
 }
 #if defined(FLATBUFFERS_CPP98_STL)
-template<> inline std::string NumToString<long long>(long long t) {
+template <>
+inline std::string NumToString<long long>(long long t) {
   char buf[21];  // (log((1 << 63) - 1) / log(10)) + 2
   snprintf(buf, sizeof(buf), "%lld", t);
   return std::string(buf);
 }
 
-template<>
+template <>
 inline std::string NumToString<unsigned long long>(unsigned long long t) {
   char buf[22];  // (log((1 << 63) - 1) / log(10)) + 1
   snprintf(buf, sizeof(buf), "%llu", t);
@@ -76,7 +80,8 @@ inline std::string NumToString<unsigned long long>(unsigned long long t) {
 #endif  // defined(FLATBUFFERS_CPP98_STL)
 
 // Special versions for floats/doubles.
-template<typename T> std::string FloatToString(T t, int precision) {
+template <typename T>
+std::string FloatToString(T t, int precision) {
   // to_string() prints different numbers of digits for floats depending on
   // platform and isn't available on Android, so we use stringstream
   std::stringstream ss;
@@ -95,10 +100,12 @@ template<typename T> std::string FloatToString(T t, int precision) {
   return s;
 }
 
-template<> inline std::string NumToString<double>(double t) {
+template <>
+inline std::string NumToString<double>(double t) {
   return FloatToString(t, 12);
 }
-template<> inline std::string NumToString<float>(float t) {
+template <>
+inline std::string NumToString<float>(float t) {
   return FloatToString(t, 6);
 }
 
@@ -115,7 +122,7 @@ inline std::string IntToStringHex(int i, int xdigits) {
 // Portable implementation of strtoll().
 inline int64_t StringToInt(const char *str, char **endptr = nullptr,
                            int base = 10) {
-  // clang-format off
+// clang-format off
   #ifdef _MSC_VER
     return _strtoi64(str, endptr, base);
   #else
@@ -127,7 +134,7 @@ inline int64_t StringToInt(const char *str, char **endptr = nullptr,
 // Portable implementation of strtoull().
 inline uint64_t StringToUInt(const char *str, char **endptr = nullptr,
                              int base = 10) {
-  // clang-format off
+// clang-format off
   #ifdef _MSC_VER
     return _strtoui64(str, endptr, base);
   #else
@@ -262,7 +269,7 @@ inline void EnsureDirExists(const std::string &filepath) {
 // Obtains the absolute path from any other path.
 // Returns the input path if the absolute path couldn't be resolved.
 inline std::string AbsolutePath(const std::string &filepath) {
-  // clang-format off
+// clang-format off
   #ifdef FLATBUFFERS_NO_ABSOLUTE_PATH_RESOLUTION
     return filepath;
   #else
@@ -321,10 +328,13 @@ inline int FromUTF8(const char **in) {
       break;
     }
   }
-  if ((static_cast<const unsigned char>(**in) << len) & 0x80) return -1;  // Bit after leading 1's must be 0.
+  if ((static_cast<const unsigned char>(**in) << len) & 0x80)
+    return -1;  // Bit after leading 1's must be 0.
   if (!len) return *(*in)++;
   // UTF-8 encoded values with a length are between 2 and 4 bytes.
-  if (len < 2 || len > 4) { return -1; }
+  if (len < 2 || len > 4) {
+    return -1;
+  }
   // Grab initial bits of the code.
   int ucc = *(*in)++ & ((1 << (7 - len)) - 1);
   for (int i = 0; i < len - 1; i++) {
@@ -334,20 +344,28 @@ inline int FromUTF8(const char **in) {
   }
   // UTF-8 cannot encode values between 0xD800 and 0xDFFF (reserved for
   // UTF-16 surrogate pairs).
-  if (ucc >= 0xD800 && ucc <= 0xDFFF) { return -1; }
+  if (ucc >= 0xD800 && ucc <= 0xDFFF) {
+    return -1;
+  }
   // UTF-8 must represent code points in their shortest possible encoding.
   switch (len) {
     case 2:
       // Two bytes of UTF-8 can represent code points from U+0080 to U+07FF.
-      if (ucc < 0x0080 || ucc > 0x07FF) { return -1; }
+      if (ucc < 0x0080 || ucc > 0x07FF) {
+        return -1;
+      }
       break;
     case 3:
       // Three bytes of UTF-8 can represent code points from U+0800 to U+FFFF.
-      if (ucc < 0x0800 || ucc > 0xFFFF) { return -1; }
+      if (ucc < 0x0800 || ucc > 0xFFFF) {
+        return -1;
+      }
       break;
     case 4:
       // Four bytes of UTF-8 can represent code points from U+10000 to U+10FFFF.
-      if (ucc < 0x10000 || ucc > 0x10FFFF) { return -1; }
+      if (ucc < 0x10000 || ucc > 0x10FFFF) {
+        return -1;
+      }
       break;
   }
   return ucc;
@@ -387,13 +405,27 @@ inline bool EscapeString(const char *s, size_t length, std::string *_text,
   for (uoffset_t i = 0; i < length; i++) {
     char c = s[i];
     switch (c) {
-      case '\n': text += "\\n"; break;
-      case '\t': text += "\\t"; break;
-      case '\r': text += "\\r"; break;
-      case '\b': text += "\\b"; break;
-      case '\f': text += "\\f"; break;
-      case '\"': text += "\\\""; break;
-      case '\\': text += "\\\\"; break;
+      case '\n':
+        text += "\\n";
+        break;
+      case '\t':
+        text += "\\t";
+        break;
+      case '\r':
+        text += "\\r";
+        break;
+      case '\b':
+        text += "\\b";
+        break;
+      case '\f':
+        text += "\\f";
+        break;
+      case '\"':
+        text += "\\\"";
+        break;
+      case '\\':
+        text += "\\\\";
+        break;
       default:
         if (c >= ' ' && c <= '~') {
           text += c;

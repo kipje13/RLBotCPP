@@ -22,7 +22,7 @@
 #include "flatbuffers/util.h"
 
 #ifndef FLATC_H_
-#  define FLATC_H_
+#define FLATC_H_
 
 namespace flatbuffers {
 

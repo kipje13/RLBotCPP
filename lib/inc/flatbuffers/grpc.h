@@ -30,7 +30,8 @@ namespace grpc {
 // `grpc_slice` and also provides flatbuffers-specific helpers such as `Verify`
 // and `GetRoot`. Since it is backed by a `grpc_slice`, the underlying buffer
 // is refcounted and ownership is be managed automatically.
-template<class T> class Message {
+template <class T>
+class Message {
  public:
   Message() : slice_(grpc_empty_slice()) {}
 
@@ -156,11 +157,12 @@ class MessageBuilder : private detail::SliceAllocatorMember,
   // GetMessage extracts the subslice of the buffer corresponding to the
   // flatbuffers-encoded region and wraps it in a `Message<T>` to handle buffer
   // ownership.
-  template<class T> Message<T> GetMessage() {
-    auto buf_data = buf_.scratch_data();       // pointer to memory
-    auto buf_size = buf_.capacity();  // size of memory
-    auto msg_data = buf_.data();      // pointer to msg
-    auto msg_size = buf_.size();      // size of msg
+  template <class T>
+  Message<T> GetMessage() {
+    auto buf_data = buf_.scratch_data();  // pointer to memory
+    auto buf_size = buf_.capacity();      // size of memory
+    auto msg_data = buf_.data();          // pointer to msg
+    auto msg_size = buf_.size();          // size of msg
     // Do some sanity checks on data/size
     assert(msg_data);
     assert(msg_size);
@@ -178,7 +180,8 @@ class MessageBuilder : private detail::SliceAllocatorMember,
     return msg;
   }
 
-  template<class T> Message<T> ReleaseMessage() {
+  template <class T>
+  Message<T> ReleaseMessage() {
     Message<T> msg = GetMessage<T>();
     Reset();
     return msg;
@@ -193,7 +196,8 @@ class MessageBuilder : private detail::SliceAllocatorMember,
 
 namespace grpc {
 
-template<class T> class SerializationTraits<flatbuffers::grpc::Message<T>> {
+template <class T>
+class SerializationTraits<flatbuffers::grpc::Message<T>> {
  public:
   static grpc::Status Serialize(const flatbuffers::grpc::Message<T> &msg,
                                 grpc_byte_buffer **buffer, bool *own_buffer) {

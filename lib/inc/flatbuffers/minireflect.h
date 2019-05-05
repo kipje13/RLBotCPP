@@ -74,24 +74,34 @@ inline size_t InlineSize(ElementaryType type, const TypeTable *type_table) {
     case ET_UTYPE:
     case ET_BOOL:
     case ET_CHAR:
-    case ET_UCHAR: return 1;
+    case ET_UCHAR:
+      return 1;
     case ET_SHORT:
-    case ET_USHORT: return 2;
+    case ET_USHORT:
+      return 2;
     case ET_INT:
     case ET_UINT:
     case ET_FLOAT:
-    case ET_STRING: return 4;
+    case ET_STRING:
+      return 4;
     case ET_LONG:
     case ET_ULONG:
-    case ET_DOUBLE: return 8;
+    case ET_DOUBLE:
+      return 8;
     case ET_SEQUENCE:
       switch (type_table->st) {
         case ST_TABLE:
-        case ST_UNION: return 4;
-        case ST_STRUCT: return type_table->values[type_table->num_elems];
-        default: assert(false); return 1;
+        case ST_UNION:
+          return 4;
+        case ST_STRUCT:
+          return type_table->values[type_table->num_elems];
+        default:
+          assert(false);
+          return 1;
       }
-    default: assert(false); return 1;
+    default:
+      assert(false);
+      return 1;
   }
 }
 
@@ -104,7 +114,8 @@ inline int32_t LookupEnum(int32_t enum_val, const int32_t *values,
   return -1;  // Unknown enum value.
 }
 
-template<typename T> const char *EnumName(T tval, const TypeTable *type_table) {
+template <typename T>
+const char *EnumName(T tval, const TypeTable *type_table) {
   if (!type_table || !type_table->names) return nullptr;
   auto i = LookupEnum(static_cast<int32_t>(tval), type_table->values,
                       type_table->num_elems);
@@ -187,7 +198,9 @@ inline void IterateValue(ElementaryType type, const uint8_t *val,
           val += ReadScalar<uoffset_t>(val);
           IterateObject(val, type_table, visitor);
           break;
-        case ST_STRUCT: IterateObject(val, type_table, visitor); break;
+        case ST_STRUCT:
+          IterateObject(val, type_table, visitor);
+          break;
         case ST_UNION: {
           val += ReadScalar<uoffset_t>(val);
           assert(prev_val);
@@ -210,14 +223,17 @@ inline void IterateValue(ElementaryType type, const uint8_t *val,
               case ET_STRING:
                 visitor->String(reinterpret_cast<const String *>(val));
                 break;
-              default: visitor->Unknown(val);
+              default:
+                visitor->Unknown(val);
             }
           } else {
             visitor->Unknown(val);
           }
           break;
         }
-        case ST_ENUM: assert(false); break;
+        case ST_ENUM:
+          assert(false);
+          break;
       }
       break;
     }
@@ -239,7 +255,9 @@ inline void IterateObject(const uint8_t *obj, const TypeTable *type_table,
     auto is_vector = type_code.is_vector != 0;
     auto ref_idx = type_code.sequence_ref;
     const TypeTable *ref = nullptr;
-    if (ref_idx >= 0) { ref = type_table->type_refs[ref_idx](); }
+    if (ref_idx >= 0) {
+      ref = type_table->type_refs[ref_idx]();
+    }
     auto name = type_table->names ? type_table->names[i] : nullptr;
     const uint8_t *val = nullptr;
     if (type_table->st == ST_TABLE) {
@@ -295,7 +313,8 @@ struct ToStringVisitor : public IterationVisitor {
       s += ": ";
     }
   }
-  template<typename T> void Named(T x, const char *name) {
+  template <typename T>
+  void Named(T x, const char *name) {
     if (name)
       s += name;
     else

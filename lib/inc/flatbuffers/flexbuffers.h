@@ -24,12 +24,12 @@
 #include "flatbuffers/util.h"
 
 #ifdef _MSC_VER
-#  include <intrin.h>
+#include <intrin.h>
 #endif
 
 #if defined(_MSC_VER)
-#  pragma warning(push)
-#  pragma warning(disable : 4127)  // C4127: conditional expression is constant
+#pragma warning(push)
+#pragma warning(disable : 4127)  // C4127: conditional expression is constant
 #endif
 
 namespace flexbuffers {
@@ -99,11 +99,17 @@ inline bool IsFixedTypedVector(Type t) {
 inline Type ToTypedVector(Type t, size_t fixed_len = 0) {
   assert(IsTypedVectorElementType(t));
   switch (fixed_len) {
-    case 0: return static_cast<Type>(t - TYPE_INT + TYPE_VECTOR_INT);
-    case 2: return static_cast<Type>(t - TYPE_INT + TYPE_VECTOR_INT2);
-    case 3: return static_cast<Type>(t - TYPE_INT + TYPE_VECTOR_INT3);
-    case 4: return static_cast<Type>(t - TYPE_INT + TYPE_VECTOR_INT4);
-    default: assert(0); return TYPE_NULL;
+    case 0:
+      return static_cast<Type>(t - TYPE_INT + TYPE_VECTOR_INT);
+    case 2:
+      return static_cast<Type>(t - TYPE_INT + TYPE_VECTOR_INT2);
+    case 3:
+      return static_cast<Type>(t - TYPE_INT + TYPE_VECTOR_INT3);
+    case 4:
+      return static_cast<Type>(t - TYPE_INT + TYPE_VECTOR_INT4);
+    default:
+      assert(0);
+      return TYPE_NULL;
   }
 }
 
@@ -130,7 +136,7 @@ typedef int8_t quarter;
 // decently quick, but it is the most frequently executed function.
 // We could do an (unaligned) 64-bit read if we ifdef out the platforms for
 // which that doesn't work (or where we'd read into un-owned memory).
-template<typename R, typename T1, typename T2, typename T4, typename T8>
+template <typename R, typename T1, typename T2, typename T4, typename T8>
 R ReadSizedScalar(const uint8_t *data, uint8_t byte_width) {
   return byte_width < 4
              ? (byte_width < 2
@@ -147,12 +153,12 @@ inline int64_t ReadInt64(const uint8_t *data, uint8_t byte_width) {
 }
 
 inline uint64_t ReadUInt64(const uint8_t *data, uint8_t byte_width) {
-  // This is the "hottest" function (all offset lookups use this), so worth
-  // optimizing if possible.
-  // TODO: GCC apparently replaces memcpy by a rep movsb, but only if count is a
-  // constant, which here it isn't. Test if memcpy is still faster than
-  // the conditionals in ReadSizedScalar. Can also use inline asm.
-  // clang-format off
+// This is the "hottest" function (all offset lookups use this), so worth
+// optimizing if possible.
+// TODO: GCC apparently replaces memcpy by a rep movsb, but only if count is a
+// constant, which here it isn't. Test if memcpy is still faster than
+// the conditionals in ReadSizedScalar. Can also use inline asm.
+// clang-format off
   #ifdef _MSC_VER
     uint64_t u = 0;
     __movsb(reinterpret_cast<uint8_t *>(&u),
@@ -174,7 +180,8 @@ inline const uint8_t *Indirect(const uint8_t *offset, uint8_t byte_width) {
   return offset - ReadUInt64(offset, byte_width);
 }
 
-template<typename T> const uint8_t *Indirect(const uint8_t *offset) {
+template <typename T>
+const uint8_t *Indirect(const uint8_t *offset) {
   return offset - flatbuffers::ReadScalar<T>(offset);
 }
 
@@ -230,7 +237,7 @@ class String : public Sized {
   std::string str() const { return std::string(c_str(), length()); }
 
   static String EmptyString() {
-    static const uint8_t empty_string[] = { 0 /*len*/, 0 /*terminator*/ };
+    static const uint8_t empty_string[] = {0 /*len*/, 0 /*terminator*/};
     return String(empty_string + 1, 1);
   }
   bool IsTheEmptyString() const { return data_ == EmptyString().data_; }
@@ -242,7 +249,7 @@ class Blob : public Sized {
       : Sized(data_buf, byte_width) {}
 
   static Blob EmptyBlob() {
-    static const uint8_t empty_blob[] = { 0 /*len*/ };
+    static const uint8_t empty_blob[] = {0 /*len*/};
     return Blob(empty_blob + 1, 1);
   }
   bool IsTheEmptyBlob() const { return data_ == EmptyBlob().data_; }
@@ -256,7 +263,7 @@ class Vector : public Sized {
   Reference operator[](size_t i) const;
 
   static Vector EmptyVector() {
-    static const uint8_t empty_vector[] = { 0 /*len*/ };
+    static const uint8_t empty_vector[] = {0 /*len*/};
     return Vector(empty_vector + 1, 1);
   }
   bool IsTheEmptyVector() const { return data_ == EmptyVector().data_; }
@@ -270,7 +277,7 @@ class TypedVector : public Sized {
   Reference operator[](size_t i) const;
 
   static TypedVector EmptyTypedVector() {
-    static const uint8_t empty_typed_vector[] = { 0 /*len*/ };
+    static const uint8_t empty_typed_vector[] = {0 /*len*/};
     return TypedVector(empty_typed_vector + 1, 1, TYPE_INT);
   }
   bool IsTheEmptyVector() const {
@@ -294,7 +301,7 @@ class FixedTypedVector : public Object {
   Reference operator[](size_t i) const;
 
   static FixedTypedVector EmptyFixedTypedVector() {
-    static const uint8_t fixed_empty_vector[] = { 0 /* unused */ };
+    static const uint8_t fixed_empty_vector[] = {0 /* unused */};
     return FixedTypedVector(fixed_empty_vector, 1, TYPE_INT, 0);
   }
   bool IsTheEmptyFixedTypedVector() const {
@@ -329,7 +336,7 @@ class Map : public Vector {
 
   static Map EmptyMap() {
     static const uint8_t empty_map[] = {
-      0 /*keys_len*/, 0 /*keys_offset*/, 1 /*keys_width*/, 0 /*len*/
+        0 /*keys_len*/, 0 /*keys_offset*/, 1 /*keys_width*/, 0 /*len*/
     };
     return Map(empty_map + 4, 1);
   }
@@ -385,17 +392,24 @@ class Reference {
       return ReadInt64(data_, parent_width_);
     } else
       switch (type_) {
-        case TYPE_INDIRECT_INT: return ReadInt64(Indirect(), byte_width_);
-        case TYPE_UINT: return ReadUInt64(data_, parent_width_);
-        case TYPE_INDIRECT_UINT: return ReadUInt64(Indirect(), byte_width_);
+        case TYPE_INDIRECT_INT:
+          return ReadInt64(Indirect(), byte_width_);
+        case TYPE_UINT:
+          return ReadUInt64(data_, parent_width_);
+        case TYPE_INDIRECT_UINT:
+          return ReadUInt64(Indirect(), byte_width_);
         case TYPE_FLOAT:
           return static_cast<int64_t>(ReadDouble(data_, parent_width_));
         case TYPE_INDIRECT_FLOAT:
           return static_cast<int64_t>(ReadDouble(Indirect(), byte_width_));
-        case TYPE_NULL: return 0;
-        case TYPE_STRING: return flatbuffers::StringToInt(AsString().c_str());
-        case TYPE_VECTOR: return static_cast<int64_t>(AsVector().size());
-        case TYPE_BOOL: return ReadInt64(data_, parent_width_);
+        case TYPE_NULL:
+          return 0;
+        case TYPE_STRING:
+          return flatbuffers::StringToInt(AsString().c_str());
+        case TYPE_VECTOR:
+          return static_cast<int64_t>(AsVector().size());
+        case TYPE_BOOL:
+          return ReadInt64(data_, parent_width_);
         default:
           // Convert other things to int.
           return 0;
@@ -414,17 +428,24 @@ class Reference {
       return ReadUInt64(data_, parent_width_);
     } else
       switch (type_) {
-        case TYPE_INDIRECT_UINT: return ReadUInt64(Indirect(), byte_width_);
-        case TYPE_INT: return ReadInt64(data_, parent_width_);
-        case TYPE_INDIRECT_INT: return ReadInt64(Indirect(), byte_width_);
+        case TYPE_INDIRECT_UINT:
+          return ReadUInt64(Indirect(), byte_width_);
+        case TYPE_INT:
+          return ReadInt64(data_, parent_width_);
+        case TYPE_INDIRECT_INT:
+          return ReadInt64(Indirect(), byte_width_);
         case TYPE_FLOAT:
           return static_cast<uint64_t>(ReadDouble(data_, parent_width_));
         case TYPE_INDIRECT_FLOAT:
           return static_cast<uint64_t>(ReadDouble(Indirect(), byte_width_));
-        case TYPE_NULL: return 0;
-        case TYPE_STRING: return flatbuffers::StringToUInt(AsString().c_str());
-        case TYPE_VECTOR: return static_cast<uint64_t>(AsVector().size());
-        case TYPE_BOOL: return ReadUInt64(data_, parent_width_);
+        case TYPE_NULL:
+          return 0;
+        case TYPE_STRING:
+          return flatbuffers::StringToUInt(AsString().c_str());
+        case TYPE_VECTOR:
+          return static_cast<uint64_t>(AsVector().size());
+        case TYPE_BOOL:
+          return ReadUInt64(data_, parent_width_);
         default:
           // Convert other things to uint.
           return 0;
@@ -441,7 +462,8 @@ class Reference {
       return ReadDouble(data_, parent_width_);
     } else
       switch (type_) {
-        case TYPE_INDIRECT_FLOAT: return ReadDouble(Indirect(), byte_width_);
+        case TYPE_INDIRECT_FLOAT:
+          return ReadDouble(Indirect(), byte_width_);
         case TYPE_INT:
           return static_cast<double>(ReadInt64(data_, parent_width_));
         case TYPE_UINT:
@@ -450,9 +472,12 @@ class Reference {
           return static_cast<double>(ReadInt64(Indirect(), byte_width_));
         case TYPE_INDIRECT_UINT:
           return static_cast<double>(ReadUInt64(Indirect(), byte_width_));
-        case TYPE_NULL: return 0.0;
-        case TYPE_STRING: return strtod(AsString().c_str(), nullptr);
-        case TYPE_VECTOR: return static_cast<double>(AsVector().size());
+        case TYPE_NULL:
+          return 0.0;
+        case TYPE_STRING:
+          return strtod(AsString().c_str(), nullptr);
+        case TYPE_VECTOR:
+          return static_cast<double>(AsVector().size());
         case TYPE_BOOL:
           return static_cast<double>(ReadUInt64(data_, parent_width_));
         default:
@@ -588,7 +613,8 @@ class Reference {
     }
   }
 
-  template<typename T> T As();
+  template <typename T>
+  T As();
 
   // Experimental: Mutation functions.
   // These allow scalars in an already created buffer to be updated in-place.
@@ -671,7 +697,7 @@ class Reference {
     return flexbuffers::Indirect(data_, parent_width_);
   }
 
-  template<typename T>
+  template <typename T>
   bool Mutate(const uint8_t *dest, T t, size_t byte_width,
               BitWidth value_width) {
     auto fits = static_cast<size_t>(static_cast<size_t>(1U) << value_width) <=
@@ -683,7 +709,7 @@ class Reference {
     return fits;
   }
 
-  template<typename T>
+  template <typename T>
   bool MutateF(const uint8_t *dest, T t, size_t byte_width,
                BitWidth value_width) {
     if (byte_width == sizeof(double))
@@ -701,35 +727,83 @@ class Reference {
 };
 
 // Template specialization for As().
-template<> inline bool Reference::As<bool>() { return AsBool(); }
+template <>
+inline bool Reference::As<bool>() {
+  return AsBool();
+}
 
-template<> inline int8_t Reference::As<int8_t>() { return AsInt8(); }
-template<> inline int16_t Reference::As<int16_t>() { return AsInt16(); }
-template<> inline int32_t Reference::As<int32_t>() { return AsInt32(); }
-template<> inline int64_t Reference::As<int64_t>() { return AsInt64(); }
+template <>
+inline int8_t Reference::As<int8_t>() {
+  return AsInt8();
+}
+template <>
+inline int16_t Reference::As<int16_t>() {
+  return AsInt16();
+}
+template <>
+inline int32_t Reference::As<int32_t>() {
+  return AsInt32();
+}
+template <>
+inline int64_t Reference::As<int64_t>() {
+  return AsInt64();
+}
 
-template<> inline uint8_t Reference::As<uint8_t>() { return AsUInt8(); }
-template<> inline uint16_t Reference::As<uint16_t>() { return AsUInt16(); }
-template<> inline uint32_t Reference::As<uint32_t>() { return AsUInt32(); }
-template<> inline uint64_t Reference::As<uint64_t>() { return AsUInt64(); }
+template <>
+inline uint8_t Reference::As<uint8_t>() {
+  return AsUInt8();
+}
+template <>
+inline uint16_t Reference::As<uint16_t>() {
+  return AsUInt16();
+}
+template <>
+inline uint32_t Reference::As<uint32_t>() {
+  return AsUInt32();
+}
+template <>
+inline uint64_t Reference::As<uint64_t>() {
+  return AsUInt64();
+}
 
-template<> inline double Reference::As<double>() { return AsDouble(); }
-template<> inline float Reference::As<float>() { return AsFloat(); }
+template <>
+inline double Reference::As<double>() {
+  return AsDouble();
+}
+template <>
+inline float Reference::As<float>() {
+  return AsFloat();
+}
 
-template<> inline String Reference::As<String>() { return AsString(); }
-template<> inline std::string Reference::As<std::string>() {
+template <>
+inline String Reference::As<String>() {
+  return AsString();
+}
+template <>
+inline std::string Reference::As<std::string>() {
   return AsString().str();
 }
 
-template<> inline Blob Reference::As<Blob>() { return AsBlob(); }
-template<> inline Vector Reference::As<Vector>() { return AsVector(); }
-template<> inline TypedVector Reference::As<TypedVector>() {
+template <>
+inline Blob Reference::As<Blob>() {
+  return AsBlob();
+}
+template <>
+inline Vector Reference::As<Vector>() {
+  return AsVector();
+}
+template <>
+inline TypedVector Reference::As<TypedVector>() {
   return AsTypedVector();
 }
-template<> inline FixedTypedVector Reference::As<FixedTypedVector>() {
+template <>
+inline FixedTypedVector Reference::As<FixedTypedVector>() {
   return AsFixedTypedVector();
 }
-template<> inline Map Reference::As<Map>() { return AsMap(); }
+template <>
+inline Map Reference::As<Map>() {
+  return AsMap();
+}
 
 inline uint8_t PackedType(BitWidth bit_width, Type type) {
   return static_cast<uint8_t>(bit_width | (type << 2));
@@ -765,7 +839,8 @@ inline Reference FixedTypedVector::operator[](size_t i) const {
   return Reference(elem, byte_width_, 1, type_);
 }
 
-template<typename T> int KeyCompare(const void *key, const void *elem) {
+template <typename T>
+int KeyCompare(const void *key, const void *elem) {
   auto str_elem = reinterpret_cast<const char *>(
       Indirect<T>(reinterpret_cast<const uint8_t *>(elem)));
   auto skey = reinterpret_cast<const char *>(key);
@@ -778,10 +853,18 @@ inline Reference Map::operator[](const char *key) const {
   // to pick the right one ahead of time.
   int (*comp)(const void *, const void *) = nullptr;
   switch (keys.byte_width_) {
-    case 1: comp = KeyCompare<uint8_t>; break;
-    case 2: comp = KeyCompare<uint16_t>; break;
-    case 4: comp = KeyCompare<uint32_t>; break;
-    case 8: comp = KeyCompare<uint64_t>; break;
+    case 1:
+      comp = KeyCompare<uint8_t>;
+      break;
+    case 2:
+      comp = KeyCompare<uint16_t>;
+      break;
+    case 4:
+      comp = KeyCompare<uint32_t>;
+      break;
+    case 8:
+      comp = KeyCompare<uint64_t>;
+      break;
   }
   auto res = std::bsearch(key, keys.data_, keys.size(), keys.byte_width_, comp);
   if (!res) return Reference(nullptr, 1, NullPackedType());
@@ -1075,29 +1158,33 @@ class Builder FLATBUFFERS_FINAL_CLASS {
     return static_cast<size_t>(vec.u_);
   }
 
-  template<typename F> size_t Vector(F f) {
+  template <typename F>
+  size_t Vector(F f) {
     auto start = StartVector();
     f();
     return EndVector(start, false, false);
   }
-  template<typename F, typename T> size_t Vector(F f, T &state) {
+  template <typename F, typename T>
+  size_t Vector(F f, T &state) {
     auto start = StartVector();
     f(state);
     return EndVector(start, false, false);
   }
-  template<typename F> size_t Vector(const char *key, F f) {
+  template <typename F>
+  size_t Vector(const char *key, F f) {
     auto start = StartVector(key);
     f();
     return EndVector(start, false, false);
   }
-  template<typename F, typename T>
+  template <typename F, typename T>
   size_t Vector(const char *key, F f, T &state) {
     auto start = StartVector(key);
     f(state);
     return EndVector(start, false, false);
   }
 
-  template<typename T> void Vector(const T *elems, size_t len) {
+  template <typename T>
+  void Vector(const T *elems, size_t len) {
     if (flatbuffers::is_scalar<T>::value) {
       // This path should be a lot quicker and use less space.
       ScalarVector(elems, len, false);
@@ -1107,38 +1194,43 @@ class Builder FLATBUFFERS_FINAL_CLASS {
       EndVector(start, false, false);
     }
   }
-  template<typename T>
+  template <typename T>
   void Vector(const char *key, const T *elems, size_t len) {
     Key(key);
     Vector(elems, len);
   }
-  template<typename T> void Vector(const std::vector<T> &vec) {
+  template <typename T>
+  void Vector(const std::vector<T> &vec) {
     Vector(flatbuffers::vector_data(vec), vec.size());
   }
 
-  template<typename F> size_t TypedVector(F f) {
+  template <typename F>
+  size_t TypedVector(F f) {
     auto start = StartVector();
     f();
     return EndVector(start, true, false);
   }
-  template<typename F, typename T> size_t TypedVector(F f, T &state) {
+  template <typename F, typename T>
+  size_t TypedVector(F f, T &state) {
     auto start = StartVector();
     f(state);
     return EndVector(start, true, false);
   }
-  template<typename F> size_t TypedVector(const char *key, F f) {
+  template <typename F>
+  size_t TypedVector(const char *key, F f) {
     auto start = StartVector(key);
     f();
     return EndVector(start, true, false);
   }
-  template<typename F, typename T>
+  template <typename F, typename T>
   size_t TypedVector(const char *key, F f, T &state) {
     auto start = StartVector(key);
     f(state);
     return EndVector(start, true, false);
   }
 
-  template<typename T> size_t FixedTypedVector(const T *elems, size_t len) {
+  template <typename T>
+  size_t FixedTypedVector(const T *elems, size_t len) {
     // We only support a few fixed vector lengths. Anything bigger use a
     // regular typed vector.
     assert(len >= 2 && len <= 4);
@@ -1147,33 +1239,38 @@ class Builder FLATBUFFERS_FINAL_CLASS {
     return ScalarVector(elems, len, true);
   }
 
-  template<typename T>
+  template <typename T>
   size_t FixedTypedVector(const char *key, const T *elems, size_t len) {
     Key(key);
     return FixedTypedVector(elems, len);
   }
 
-  template<typename F> size_t Map(F f) {
+  template <typename F>
+  size_t Map(F f) {
     auto start = StartMap();
     f();
     return EndMap(start);
   }
-  template<typename F, typename T> size_t Map(F f, T &state) {
+  template <typename F, typename T>
+  size_t Map(F f, T &state) {
     auto start = StartMap();
     f(state);
     return EndMap(start);
   }
-  template<typename F> size_t Map(const char *key, F f) {
+  template <typename F>
+  size_t Map(const char *key, F f) {
     auto start = StartMap(key);
     f();
     return EndMap(start);
   }
-  template<typename F, typename T> size_t Map(const char *key, F f, T &state) {
+  template <typename F, typename T>
+  size_t Map(const char *key, F f, T &state) {
     auto start = StartMap(key);
     f(state);
     return EndMap(start);
   }
-  template<typename T> void Map(const std::map<std::string, T> &map) {
+  template <typename T>
+  void Map(const std::map<std::string, T> &map) {
     auto start = StartMap();
     for (auto it = map.begin(); it != map.end(); ++it)
       Add(it->first.c_str(), it->second);
@@ -1196,18 +1293,26 @@ class Builder FLATBUFFERS_FINAL_CLASS {
   void Add(const std::string &str) { String(str); }
   void Add(const flexbuffers::String &str) { String(str); }
 
-  template<typename T> void Add(const std::vector<T> &vec) { Vector(vec); }
+  template <typename T>
+  void Add(const std::vector<T> &vec) {
+    Vector(vec);
+  }
 
-  template<typename T> void Add(const char *key, const T &t) {
+  template <typename T>
+  void Add(const char *key, const T &t) {
     Key(key);
     Add(t);
   }
 
-  template<typename T> void Add(const std::map<std::string, T> &map) {
+  template <typename T>
+  void Add(const std::map<std::string, T> &map) {
     Map(map);
   }
 
-  template<typename T> void operator+=(const T &t) { Add(t); }
+  template <typename T>
+  void operator+=(const T &t) {
+    Add(t);
+  }
 
   // This function is useful in combination with the Mutate* functions above.
   // It forces elements of vectors and maps to have a minimum size, such that
@@ -1256,7 +1361,8 @@ class Builder FLATBUFFERS_FINAL_CLASS {
                 reinterpret_cast<const uint8_t *>(val) + size);
   }
 
-  template<typename T> void Write(T val, size_t byte_width) {
+  template <typename T>
+  void Write(T val, size_t byte_width) {
     assert(sizeof(T) >= byte_width);
     val = flatbuffers::EndianScalar(val);
     WriteBytes(&val, byte_width);
@@ -1264,11 +1370,16 @@ class Builder FLATBUFFERS_FINAL_CLASS {
 
   void WriteDouble(double f, uint8_t byte_width) {
     switch (byte_width) {
-      case 8: Write(f, byte_width); break;
-      case 4: Write(static_cast<float>(f), byte_width); break;
+      case 8:
+        Write(f, byte_width);
+        break;
+      case 4:
+        Write(static_cast<float>(f), byte_width);
+        break;
       // case 2: Write(static_cast<half>(f), byte_width); break;
       // case 1: Write(static_cast<quarter>(f), byte_width); break;
-      default: assert(0);
+      default:
+        assert(0);
     }
   }
 
@@ -1278,7 +1389,8 @@ class Builder FLATBUFFERS_FINAL_CLASS {
     Write(reloff, byte_width);
   }
 
-  template<typename T> void PushIndirect(T val, Type type, BitWidth bit_width) {
+  template <typename T>
+  void PushIndirect(T val, Type type, BitWidth bit_width) {
     auto byte_width = Align(bit_width);
     auto iloc = buf_.size();
     Write(val, byte_width);
@@ -1287,15 +1399,22 @@ class Builder FLATBUFFERS_FINAL_CLASS {
 
   static BitWidth WidthB(size_t byte_width) {
     switch (byte_width) {
-      case 1: return BIT_WIDTH_8;
-      case 2: return BIT_WIDTH_16;
-      case 4: return BIT_WIDTH_32;
-      case 8: return BIT_WIDTH_64;
-      default: assert(false); return BIT_WIDTH_64;
+      case 1:
+        return BIT_WIDTH_8;
+      case 2:
+        return BIT_WIDTH_16;
+      case 4:
+        return BIT_WIDTH_32;
+      case 8:
+        return BIT_WIDTH_64;
+      default:
+        assert(false);
+        return BIT_WIDTH_64;
     }
   }
 
-  template<typename T> static Type GetScalarType() {
+  template <typename T>
+  static Type GetScalarType() {
     assert(flatbuffers::is_scalar<T>::value);
     return flatbuffers::is_floating_point<T>::value
                ? TYPE_FLOAT
@@ -1377,11 +1496,19 @@ class Builder FLATBUFFERS_FINAL_CLASS {
   void WriteAny(const Value &val, uint8_t byte_width) {
     switch (val.type_) {
       case TYPE_NULL:
-      case TYPE_INT: Write(val.i_, byte_width); break;
+      case TYPE_INT:
+        Write(val.i_, byte_width);
+        break;
       case TYPE_BOOL:
-      case TYPE_UINT: Write(val.u_, byte_width); break;
-      case TYPE_FLOAT: WriteDouble(val.f_, byte_width); break;
-      default: WriteOffset(val.u_, byte_width); break;
+      case TYPE_UINT:
+        Write(val.u_, byte_width);
+        break;
+      case TYPE_FLOAT:
+        WriteDouble(val.f_, byte_width);
+        break;
+      default:
+        WriteOffset(val.u_, byte_width);
+        break;
     }
   }
 
@@ -1395,7 +1522,7 @@ class Builder FLATBUFFERS_FINAL_CLASS {
     return sloc;
   }
 
-  template<typename T>
+  template <typename T>
   size_t ScalarVector(const T *elems, size_t len, bool fixed) {
     auto vector_type = GetScalarType<T>();
     auto byte_width = sizeof(T);
@@ -1516,8 +1643,8 @@ class Builder FLATBUFFERS_FINAL_CLASS {
 
 }  // namespace flexbuffers
 
-#  if defined(_MSC_VER)
-#    pragma warning(pop)
-#  endif
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 #endif  // FLATBUFFERS_FLEXBUFFERS_H_
