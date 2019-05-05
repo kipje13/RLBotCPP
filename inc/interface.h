@@ -3,6 +3,16 @@
 
 #include <string>
 
+#ifdef _WIN64
+	#define DLLNAME "RLBot_Core_Interface.dll"
+#endif
+
+#ifdef _WIN32 && !_WIN64
+	#ifndef _WIN64
+		#define DLLNAME "RLBot_Core_Interface_32.dll"
+	#endif
+#endif
+
 struct ByteBuffer {
 	void* ptr;
 	int32_t size;
