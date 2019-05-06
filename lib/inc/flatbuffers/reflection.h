@@ -46,7 +46,7 @@ inline bool IsLong(reflection::BaseType t) {
 // Size of a basic type, don't use with structs.
 inline size_t GetTypeSize(reflection::BaseType base_type) {
   // This needs to correspond to the BaseType enum.
-  static size_t sizes[] = { 0, 1, 1, 1, 1, 2, 2, 4, 4, 8, 8, 4, 8, 4, 4, 4, 4 };
+  static size_t sizes[] = {0, 1, 1, 1, 1, 2, 2, 4, 4, 8, 8, 4, 8, 4, 4, 4, 4};
   return sizes[base_type];
 }
 
@@ -71,19 +71,21 @@ inline const Table *GetAnyRoot(const uint8_t *flatbuf) {
 }
 
 // Get a field's default, if you know it's an integer, and its exact type.
-template<typename T> T GetFieldDefaultI(const reflection::Field &field) {
+template <typename T>
+T GetFieldDefaultI(const reflection::Field &field) {
   assert(sizeof(T) == GetTypeSize(field.type()->base_type()));
   return static_cast<T>(field.default_integer());
 }
 
 // Get a field's default, if you know it's floating point and its exact type.
-template<typename T> T GetFieldDefaultF(const reflection::Field &field) {
+template <typename T>
+T GetFieldDefaultF(const reflection::Field &field) {
   assert(sizeof(T) == GetTypeSize(field.type()->base_type()));
   return static_cast<T>(field.default_real());
 }
 
 // Get a field, if you know it's an integer, and its exact type.
-template<typename T>
+template <typename T>
 T GetFieldI(const Table &table, const reflection::Field &field) {
   assert(sizeof(T) == GetTypeSize(field.type()->base_type()));
   return table.GetField<T>(field.offset(),
@@ -91,7 +93,7 @@ T GetFieldI(const Table &table, const reflection::Field &field) {
 }
 
 // Get a field, if you know it's floating point and its exact type.
-template<typename T>
+template <typename T>
 T GetFieldF(const Table &table, const reflection::Field &field) {
   assert(sizeof(T) == GetTypeSize(field.type()->base_type()));
   return table.GetField<T>(field.offset(),
@@ -106,7 +108,7 @@ inline const String *GetFieldS(const Table &table,
 }
 
 // Get a field, if you know it's a vector.
-template<typename T>
+template <typename T>
 Vector<T> *GetFieldV(const Table &table, const reflection::Field &field) {
   assert(field.type()->base_type() == reflection::Vector &&
          sizeof(T) == GetTypeSize(field.type()->element()));
@@ -225,7 +227,7 @@ inline std::string GetAnyVectorElemS(const VectorOfAny *vec,
 // Get a vector element that's a table/string/vector from a generic vector.
 // Pass Table/String/VectorOfAny as template parameter.
 // Warning: does no typechecking.
-template<typename T>
+template <typename T>
 T *GetAnyVectorElemPointer(const VectorOfAny *vec, size_t i) {
   auto elem_ptr = vec->Data() + sizeof(uoffset_t) * i;
   return (T *)(elem_ptr + ReadScalar<uoffset_t>(elem_ptr));
@@ -236,7 +238,7 @@ T *GetAnyVectorElemPointer(const VectorOfAny *vec, size_t i) {
 // Get elem_size from GetTypeSizeInline().
 // Note: little-endian data on all platforms, use EndianScalar() instead of
 // raw pointer access with scalars).
-template<typename T>
+template <typename T>
 T *GetAnyVectorElemAddressOf(const VectorOfAny *vec, size_t i,
                              size_t elem_size) {
   // C-cast to allow const conversion.
@@ -244,13 +246,13 @@ T *GetAnyVectorElemAddressOf(const VectorOfAny *vec, size_t i,
 }
 
 // Similarly, for elements of tables.
-template<typename T>
+template <typename T>
 T *GetAnyFieldAddressOf(const Table &table, const reflection::Field &field) {
   return (T *)table.GetAddressOf(field.offset());
 }
 
 // Similarly, for elements of structs.
-template<typename T>
+template <typename T>
 T *GetAnyFieldAddressOf(const Struct &st, const reflection::Field &field) {
   return (T *)st.GetAddressOf(field.offset());
 }
@@ -258,10 +260,12 @@ T *GetAnyFieldAddressOf(const Struct &st, const reflection::Field &field) {
 // ------------------------- SETTERS -------------------------
 
 // Set any scalar field, if you know its exact type.
-template<typename T>
+template <typename T>
 bool SetField(Table *table, const reflection::Field &field, T val) {
   reflection::BaseType type = field.type()->base_type();
-  if (!IsScalar(type)) { return false; }
+  if (!IsScalar(type)) {
+    return false;
+  }
   assert(sizeof(T) == GetTypeSize(type));
   T def;
   if (IsInteger(type)) {
@@ -351,7 +355,8 @@ inline void SetAnyVectorElemS(VectorOfAny *vec, reflection::BaseType elem_type,
 
 // "smart" pointer for use with resizing vectors: turns a pointer inside
 // a vector into a relative offset, such that it is not affected by resizes.
-template<typename T, typename U> class pointer_inside_vector {
+template <typename T, typename U>
+class pointer_inside_vector {
  public:
   pointer_inside_vector(T *ptr, std::vector<U> &vec)
       : offset_(reinterpret_cast<uint8_t *>(ptr) -
@@ -371,7 +376,7 @@ template<typename T, typename U> class pointer_inside_vector {
 };
 
 // Helper to create the above easily without specifying template args.
-template<typename T, typename U>
+template <typename T, typename U>
 pointer_inside_vector<T, U> piv(T *ptr, std::vector<U> &vec) {
   return pointer_inside_vector<T, U>(ptr, vec);
 }
@@ -411,7 +416,7 @@ uint8_t *ResizeAnyVector(const reflection::Schema &schema, uoffset_t newsize,
                          uoffset_t elem_size, std::vector<uint8_t> *flatbuf,
                          const reflection::Object *root_table = nullptr);
 
-template<typename T>
+template <typename T>
 void ResizeVector(const reflection::Schema &schema, uoffset_t newsize, T val,
                   const Vector<T> *vec, std::vector<uint8_t> *flatbuf,
                   const reflection::Object *root_table = nullptr) {
