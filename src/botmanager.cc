@@ -8,6 +8,24 @@ void botThread(Bot* bot);
 
 void BotManager::RunSingleBot(Bot* bot) { botThread(bot); }
 
+Controller convertControls(Input input)
+{
+	Controller c;
+
+	c.throttle = input.throttle;
+	c.steer = input.steer;
+
+	c.pitch = input.pitch;
+	c.yaw = input.yaw;
+	c.roll = input.roll;
+
+	c.jump = input.jump;
+	c.boost = input.jump;
+	c.handbrake = input.handbrake;
+
+	return c;
+}
+
 void botThread(Bot* bot) {
   float lasttime = 0;
 
@@ -33,8 +51,9 @@ void botThread(Bot* bot) {
               flatbuffers::GetRoot<rlbot::flat::BallPrediction>(
                   ballPredictionData.ptr);
 
+		  bot->ReadGameTickPacket(gametickpacket);
           int status = Interface::SetBotInput(
-              bot->GetOutput(gametickpacket, fieldinfo, ballprediction),
+              convertControls(bot->GetOutput(gametickpacket, fieldinfo, ballprediction)),
               bot->index);
 
           Interface::Free(fieldInfoData.ptr);

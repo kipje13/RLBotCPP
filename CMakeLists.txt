@@ -21,9 +21,12 @@ set(header_files
   ${PROJECT_SOURCE_DIR}/inc/renderer.h
 )
 
+add_subdirectory(../RLUtilities/rlutilities/cpp ${build_dir}/rlu)
+
 add_library(RLBotCPP STATIC ${source_files} ${header_files})
 target_include_directories(RLBotCPP PRIVATE inc lib/inc)
 target_compile_features(RLBotCPP PRIVATE cxx_std_17)
+target_link_libraries(RLBotCPP PUBLIC rlutilities_cpp)
 
 add_executable(CPPExampleBot main.cc examplebot.cc examplebot.h)
 target_link_libraries(CPPExampleBot RLBotCPP)
