@@ -111,6 +111,8 @@ struct MutatorSettings;
 
 struct MatchSettings;
 
+struct QuickChatMessages;
+
 enum TileState {
   TileState_Unknown = 0  /// The default state of the tiles.
 ,
@@ -1211,6 +1213,42 @@ inline const char * const *EnumNamesRespawnTimeOption() {
 inline const char *EnumNameRespawnTimeOption(RespawnTimeOption e) {
   const size_t index = static_cast<int>(e);
   return EnumNamesRespawnTimeOption()[index];
+}
+
+enum ExistingMatchBehavior {
+  /// Restart the match if any match settings differ. This is the default because old RLBot always worked this way.
+  ExistingMatchBehavior_Restart_If_Different = 0  /// Always restart the match, even if config is identical
+,
+  ExistingMatchBehavior_Restart = 1  /// Never restart an existing match, just try to remove or spawn cars to match the configuration.
+  /// If we are not in the middle of a match, a match will be started. Handy for LAN matches.
+,
+  ExistingMatchBehavior_Continue_And_Spawn = 2,
+  ExistingMatchBehavior_MIN = ExistingMatchBehavior_Restart_If_Different,
+  ExistingMatchBehavior_MAX = ExistingMatchBehavior_Continue_And_Spawn
+};
+
+inline const ExistingMatchBehavior (&EnumValuesExistingMatchBehavior())[3] {
+  static const ExistingMatchBehavior values[] = {
+    ExistingMatchBehavior_Restart_If_Different,
+    ExistingMatchBehavior_Restart,
+    ExistingMatchBehavior_Continue_And_Spawn
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesExistingMatchBehavior() {
+  static const char * const names[] = {
+    "Restart_If_Different",
+    "Restart",
+    "Continue_And_Spawn",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameExistingMatchBehavior(ExistingMatchBehavior e) {
+  const size_t index = static_cast<int>(e);
+  return EnumNamesExistingMatchBehavior()[index];
 }
 
 MANUALLY_ALIGNED_STRUCT(4) Vector3 FLATBUFFERS_FINAL_CLASS {
@@ -3643,7 +3681,9 @@ struct QuickChat FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_QUICKCHATSELECTION = 4,
     VT_PLAYERINDEX = 6,
-    VT_TEAMONLY = 8
+    VT_TEAMONLY = 8,
+    VT_MESSAGEINDEX = 10,
+    VT_TIMESTAMP = 12
   };
   QuickChatSelection quickChatSelection() const {
     return static_cast<QuickChatSelection>(GetField<int8_t>(VT_QUICKCHATSELECTION, 0));
@@ -3656,11 +3696,19 @@ struct QuickChat FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool teamOnly() const {
     return GetField<uint8_t>(VT_TEAMONLY, 0) != 0;
   }
+  int32_t messageIndex() const {
+    return GetField<int32_t>(VT_MESSAGEINDEX, 0);
+  }
+  float timeStamp() const {
+    return GetField<float>(VT_TIMESTAMP, 0.0f);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int8_t>(verifier, VT_QUICKCHATSELECTION) &&
            VerifyField<int32_t>(verifier, VT_PLAYERINDEX) &&
            VerifyField<uint8_t>(verifier, VT_TEAMONLY) &&
+           VerifyField<int32_t>(verifier, VT_MESSAGEINDEX) &&
+           VerifyField<float>(verifier, VT_TIMESTAMP) &&
            verifier.EndTable();
   }
 };
@@ -3676,6 +3724,12 @@ struct QuickChatBuilder {
   }
   void add_teamOnly(bool teamOnly) {
     fbb_.AddElement<uint8_t>(QuickChat::VT_TEAMONLY, static_cast<uint8_t>(teamOnly), 0);
+  }
+  void add_messageIndex(int32_t messageIndex) {
+    fbb_.AddElement<int32_t>(QuickChat::VT_MESSAGEINDEX, messageIndex, 0);
+  }
+  void add_timeStamp(float timeStamp) {
+    fbb_.AddElement<float>(QuickChat::VT_TIMESTAMP, timeStamp, 0.0f);
   }
   explicit QuickChatBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -3693,8 +3747,12 @@ inline flatbuffers::Offset<QuickChat> CreateQuickChat(
     flatbuffers::FlatBufferBuilder &_fbb,
     QuickChatSelection quickChatSelection = QuickChatSelection_Information_IGotIt,
     int32_t playerIndex = 0,
-    bool teamOnly = false) {
+    bool teamOnly = false,
+    int32_t messageIndex = 0,
+    float timeStamp = 0.0f) {
   QuickChatBuilder builder_(_fbb);
+  builder_.add_timeStamp(timeStamp);
+  builder_.add_messageIndex(messageIndex);
   builder_.add_playerIndex(playerIndex);
   builder_.add_teamOnly(teamOnly);
   builder_.add_quickChatSelection(quickChatSelection);
@@ -4762,7 +4820,8 @@ struct MatchSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_GAMEMAP = 8,
     VT_SKIPREPLAYS = 10,
     VT_INSTANTSTART = 12,
-    VT_MUTATORSETTINGS = 14
+    VT_MUTATORSETTINGS = 14,
+    VT_EXISTINGMATCHBEHAVIOR = 16
   };
   const flatbuffers::Vector<flatbuffers::Offset<PlayerConfiguration>> *playerConfigurations() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<PlayerConfiguration>> *>(VT_PLAYERCONFIGURATIONS);
@@ -4782,6 +4841,9 @@ struct MatchSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const MutatorSettings *mutatorSettings() const {
     return GetPointer<const MutatorSettings *>(VT_MUTATORSETTINGS);
   }
+  ExistingMatchBehavior existingMatchBehavior() const {
+    return static_cast<ExistingMatchBehavior>(GetField<int8_t>(VT_EXISTINGMATCHBEHAVIOR, 0));
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PLAYERCONFIGURATIONS) &&
@@ -4793,6 +4855,7 @@ struct MatchSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<uint8_t>(verifier, VT_INSTANTSTART) &&
            VerifyOffset(verifier, VT_MUTATORSETTINGS) &&
            verifier.VerifyTable(mutatorSettings()) &&
+           VerifyField<int8_t>(verifier, VT_EXISTINGMATCHBEHAVIOR) &&
            verifier.EndTable();
   }
 };
@@ -4818,6 +4881,9 @@ struct MatchSettingsBuilder {
   void add_mutatorSettings(flatbuffers::Offset<MutatorSettings> mutatorSettings) {
     fbb_.AddOffset(MatchSettings::VT_MUTATORSETTINGS, mutatorSettings);
   }
+  void add_existingMatchBehavior(ExistingMatchBehavior existingMatchBehavior) {
+    fbb_.AddElement<int8_t>(MatchSettings::VT_EXISTINGMATCHBEHAVIOR, static_cast<int8_t>(existingMatchBehavior), 0);
+  }
   explicit MatchSettingsBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -4837,10 +4903,12 @@ inline flatbuffers::Offset<MatchSettings> CreateMatchSettings(
     GameMap gameMap = GameMap_DFHStadium,
     bool skipReplays = false,
     bool instantStart = false,
-    flatbuffers::Offset<MutatorSettings> mutatorSettings = 0) {
+    flatbuffers::Offset<MutatorSettings> mutatorSettings = 0,
+    ExistingMatchBehavior existingMatchBehavior = ExistingMatchBehavior_Restart_If_Different) {
   MatchSettingsBuilder builder_(_fbb);
   builder_.add_mutatorSettings(mutatorSettings);
   builder_.add_playerConfigurations(playerConfigurations);
+  builder_.add_existingMatchBehavior(existingMatchBehavior);
   builder_.add_instantStart(instantStart);
   builder_.add_skipReplays(skipReplays);
   builder_.add_gameMap(gameMap);
@@ -4855,7 +4923,8 @@ inline flatbuffers::Offset<MatchSettings> CreateMatchSettingsDirect(
     GameMap gameMap = GameMap_DFHStadium,
     bool skipReplays = false,
     bool instantStart = false,
-    flatbuffers::Offset<MutatorSettings> mutatorSettings = 0) {
+    flatbuffers::Offset<MutatorSettings> mutatorSettings = 0,
+    ExistingMatchBehavior existingMatchBehavior = ExistingMatchBehavior_Restart_If_Different) {
   return rlbot::flat::CreateMatchSettings(
       _fbb,
       playerConfigurations ? _fbb.CreateVector<flatbuffers::Offset<PlayerConfiguration>>(*playerConfigurations) : 0,
@@ -4863,7 +4932,58 @@ inline flatbuffers::Offset<MatchSettings> CreateMatchSettingsDirect(
       gameMap,
       skipReplays,
       instantStart,
-      mutatorSettings);
+      mutatorSettings,
+      existingMatchBehavior);
+}
+
+struct QuickChatMessages FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_MESSAGES = 4
+  };
+  const flatbuffers::Vector<flatbuffers::Offset<QuickChat>> *messages() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<QuickChat>> *>(VT_MESSAGES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_MESSAGES) &&
+           verifier.Verify(messages()) &&
+           verifier.VerifyVectorOfTables(messages()) &&
+           verifier.EndTable();
+  }
+};
+
+struct QuickChatMessagesBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_messages(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<QuickChat>>> messages) {
+    fbb_.AddOffset(QuickChatMessages::VT_MESSAGES, messages);
+  }
+  explicit QuickChatMessagesBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  QuickChatMessagesBuilder &operator=(const QuickChatMessagesBuilder &);
+  flatbuffers::Offset<QuickChatMessages> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<QuickChatMessages>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<QuickChatMessages> CreateQuickChatMessages(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<QuickChat>>> messages = 0) {
+  QuickChatMessagesBuilder builder_(_fbb);
+  builder_.add_messages(messages);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<QuickChatMessages> CreateQuickChatMessagesDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<QuickChat>> *messages = nullptr) {
+  return rlbot::flat::CreateQuickChatMessages(
+      _fbb,
+      messages ? _fbb.CreateVector<flatbuffers::Offset<QuickChat>>(*messages) : 0);
 }
 
 inline bool VerifyPlayerClass(flatbuffers::Verifier &verifier, const void *obj, PlayerClass type) {

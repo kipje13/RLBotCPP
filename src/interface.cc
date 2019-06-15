@@ -9,6 +9,7 @@ typedef bool (*BoolFunc)(void);
 typedef ByteBuffer (*ByteBufferFunc)(void);
 typedef void (*VoidFunc)(void*);
 typedef int (*SendPacketFunc)(void*, int);
+typedef ByteBuffer(*ReceiveQuickChatFunc)(int, int, int);
 
 BoolFunc _isInitialized;
 VoidFunc _free;
@@ -16,11 +17,13 @@ VoidFunc _free;
 ByteBufferFunc _updateLiveDataPacketFlatbuffer;
 ByteBufferFunc _updateFieldInfoFlatbuffer;
 ByteBufferFunc _getBallPrediction;
+ReceiveQuickChatFunc _receiveChat;
 
 SendPacketFunc _updatePlayerInputFlatbuffer;
 SendPacketFunc _renderGroup;
 SendPacketFunc _sendQuickChat;
 SendPacketFunc _setGameState;
+SendPacketFunc _startMatchFlatbuffer;
 
 void Interface::LoadInterface(std::string dll) {
   HMODULE handle = LoadLibrary(dll.c_str());
@@ -34,12 +37,15 @@ void Interface::LoadInterface(std::string dll) {
       (ByteBufferFunc)GetProcAddress(handle, "UpdateFieldInfoFlatbuffer");
   _getBallPrediction =
       (ByteBufferFunc)GetProcAddress(handle, "GetBallPrediction");
+  _receiveChat =
+	  (ReceiveQuickChatFunc)GetProcAddress(handle, "ReceiveChat");
 
   _updatePlayerInputFlatbuffer =
       (SendPacketFunc)GetProcAddress(handle, "UpdatePlayerInputFlatbuffer");
   _renderGroup = (SendPacketFunc)GetProcAddress(handle, "RenderGroup");
   _sendQuickChat = (SendPacketFunc)GetProcAddress(handle, "SendQuickChat");
   _setGameState = (SendPacketFunc)GetProcAddress(handle, "SetGameState");
+  _startMatchFlatbuffer = (SendPacketFunc)GetProcAddress(handle, "StartMatchFlatbuffer");
 }
 
 bool Interface::IsInitialized() { return _isInitialized(); }
@@ -54,7 +60,10 @@ ByteBuffer Interface::UpdateFieldInfoFlatbuffer() {
   return _updateFieldInfoFlatbuffer();
 }
 
-ByteBuffer Interface::GetBallPrediction() { return _getBallPrediction(); }
+ByteBuffer Interface::GetBallPrediction() 
+{ 
+  return _getBallPrediction(); 
+}
 
 int Interface::SetBotInput(Controller input, int index) {
   flatbuffers::FlatBufferBuilder builder(50);
@@ -89,4 +98,11 @@ int Interface::SendQuickChat(rlbot::flat::QuickChatSelection message,
 
 int Interface::SetGameState(void* data, int size) {
   return _setGameState(data, size);
+}
+
+int Interface::StartMatch(MatchSettings settings) {
+  flatbuffers::FlatBufferBuilder builder(1000);
+  settings.BuildFlatbuffersPacket(builder);
+
+  return _startMatchFlatbuffer(builder.GetBufferPointer(), builder.GetSize());
 }

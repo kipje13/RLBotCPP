@@ -4,10 +4,11 @@ project(RLBotCPP LANGUAGES CXX)
 set(source_files
   ${PROJECT_SOURCE_DIR}/src/bot.cc
   ${PROJECT_SOURCE_DIR}/src/botmanager.cc
-  ${PROJECT_SOURCE_DIR}/src/statesetting.cc
   ${PROJECT_SOURCE_DIR}/src/interface.cc
+  ${PROJECT_SOURCE_DIR}/src/matchsettings.cc
   ${PROJECT_SOURCE_DIR}/src/namedrenderer.cc
   ${PROJECT_SOURCE_DIR}/src/renderer.cc
+  ${PROJECT_SOURCE_DIR}/src/statesetting.cc
 )
 
 set(header_files
@@ -15,10 +16,11 @@ set(header_files
   ${PROJECT_SOURCE_DIR}/inc/bot.h
   ${PROJECT_SOURCE_DIR}/inc/botmanager.h
   ${PROJECT_SOURCE_DIR}/inc/errorcodes.h
-  ${PROJECT_SOURCE_DIR}/inc/statesetting.h
   ${PROJECT_SOURCE_DIR}/inc/interface.h
+  ${PROJECT_SOURCE_DIR}/inc/matchsettings.h
   ${PROJECT_SOURCE_DIR}/inc/namedrenderer.h
   ${PROJECT_SOURCE_DIR}/inc/renderer.h
+  ${PROJECT_SOURCE_DIR}/inc/statesetting.h
 )
 
 add_library(RLBotCPP STATIC ${source_files} ${header_files})

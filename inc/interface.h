@@ -1,6 +1,8 @@
 #pragma once
 #include "rlbot_generated.h"
 
+#include "matchsettings.h"
+
 #include <string>
 
 #ifdef _WIN64
@@ -42,4 +44,5 @@ class Interface {
   static int SendQuickChat(rlbot::flat::QuickChatSelection message,
                            int botIndex, bool teamOnly);
   static int SetGameState(void* data, int size);
+  static int StartMatch(MatchSettings settings);
 };
