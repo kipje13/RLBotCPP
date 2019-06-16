@@ -102,7 +102,7 @@ int Interface::SetGameState(void* data, int size) {
 
 int Interface::StartMatch(MatchSettings settings) {
   flatbuffers::FlatBufferBuilder builder(1000);
-  builder.Finish(settings.BuildFlatbuffer(builder));
+  builder.Finish(settings.BuildFlatBuffer(builder));
 
   return _startMatchFlatbuffer(builder.GetBufferPointer(), builder.GetSize());
 }

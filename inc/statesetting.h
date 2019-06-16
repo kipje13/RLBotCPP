@@ -22,6 +22,9 @@ class PhysicsState {
   std::optional<DesiredVector3> angularVelocity;
 
   PhysicsState();
+
+  flatbuffers::Offset<rlbot::flat::DesiredPhysics>
+	  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
 
 class BallState {
@@ -29,12 +32,18 @@ class BallState {
   PhysicsState physicsState;
 
   BallState();
+
+  flatbuffers::Offset<rlbot::flat::DesiredBallState>
+	  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
 
 class CarState {
  public:
   PhysicsState physicsState;
   std::optional<int> boostAmount;
+
+  flatbuffers::Offset<rlbot::flat::DesiredCarState>
+	  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
 
 class GameState {

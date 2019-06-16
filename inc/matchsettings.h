@@ -80,5 +80,5 @@ public:
   bool instantStart = false;
 
   flatbuffers::Offset<rlbot::flat::MatchSettings> 
-	  BuildFlatbuffer(flatbuffers::FlatBufferBuilder &builder);
+	  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };

@@ -61,7 +61,7 @@ PlayerConfig::BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder) {
 }
 
 flatbuffers::Offset<rlbot::flat::MatchSettings>
-MatchSettings::BuildFlatbuffer(flatbuffers::FlatBufferBuilder &builder) {
+MatchSettings::BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder) {
   auto mutatorOffset = mutatorSettings.BuildFlatBuffer(builder);
 
   std::vector<flatbuffers::Offset<rlbot::flat::PlayerConfiguration>>
