@@ -1,4 +1,4 @@
-#include "MatchSettings.h"
+#include "matchsettings.h"
 
 #include "flatbuffers/flatbuffers.h"
 #include "rlbot_generated.h"

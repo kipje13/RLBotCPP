@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="RLBotCPP"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="msvc8"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CPPExampleBot">
+				<Option output="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug/CPPExampleBot.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc"/>
+					<Add directory="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/lib/inc"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 CPPExampleBot"/>
+					<CompileFile command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CPPExampleBot/fast">
+				<Option output="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug/CPPExampleBot.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc"/>
+					<Add directory="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/lib/inc"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 CPPExampleBot/fast"/>
+					<CompileFile command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="RLBotCPP">
+				<Option output="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug/RLBotCPP.lib" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc"/>
+					<Add directory="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/lib/inc"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 RLBotCPP"/>
+					<CompileFile command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="RLBotCPP/fast">
+				<Option output="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug/RLBotCPP.lib" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc"/>
+					<Add directory="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/lib/inc"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 RLBotCPP/fast"/>
+					<CompileFile command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="D:/MyThings/Programming/RLBot/RLBotCPP/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f D:\MyThings\Programming\RLBot\RLBotCPP\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/examplebot.cc">
+			<Option target="CPPExampleBot"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/examplebot.h">
+			<Option target="CPPExampleBot"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/main.cc">
+			<Option target="CPPExampleBot"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc/bot.h">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc/botmanager.h">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc/errorcodes.h">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc/interface.h">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc/matchsettings.h">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc/namedrenderer.h">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc/renderer.h">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc/rlbot_generated.h">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/inc/statesetting.h">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/src/bot.cc">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/src/botmanager.cc">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/src/interface.cc">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/src/matchsettings.cc">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/src/namedrenderer.cc">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/src/renderer.cc">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/rlbot-src/src/statesetting.cc">
+			<Option target="RLBotCPP"/>
+		</Unit>
+		<Unit filename="D:/MyThings/Programming/RLBot/RLBotCPP/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
