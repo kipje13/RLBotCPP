@@ -27,6 +27,7 @@ struct Controller {
   bool jump;
   bool boost;
   bool handbrake;
+  bool useItem;
 };
 
 class Interface {

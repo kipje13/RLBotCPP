@@ -1036,11 +1036,12 @@ enum RumbleOption {
   RumbleOption_Destruction_Derby = 4,
   RumbleOption_Spring_Loaded = 5,
   RumbleOption_Spikes_Only = 6,
+  RumbleOption_Spike_Rush = 7,
   RumbleOption_MIN = RumbleOption_None,
-  RumbleOption_MAX = RumbleOption_Spikes_Only
+  RumbleOption_MAX = RumbleOption_Spike_Rush
 };
 
-inline const RumbleOption (&EnumValuesRumbleOption())[7] {
+inline const RumbleOption (&EnumValuesRumbleOption())[8] {
   static const RumbleOption values[] = {
     RumbleOption_None,
     RumbleOption_Default,
@@ -1048,7 +1049,8 @@ inline const RumbleOption (&EnumValuesRumbleOption())[7] {
     RumbleOption_Civilized,
     RumbleOption_Destruction_Derby,
     RumbleOption_Spring_Loaded,
-    RumbleOption_Spikes_Only
+    RumbleOption_Spikes_Only,
+    RumbleOption_Spike_Rush
   };
   return values;
 }
@@ -1062,6 +1064,7 @@ inline const char * const *EnumNamesRumbleOption() {
     "Destruction_Derby",
     "Spring_Loaded",
     "Spikes_Only",
+    "Spike_Rush",
     nullptr
   };
   return names;
@@ -1384,7 +1387,8 @@ struct ControllerState FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_ROLL = 12,
     VT_JUMP = 14,
     VT_BOOST = 16,
-    VT_HANDBRAKE = 18
+    VT_HANDBRAKE = 18,
+    VT_USEITEM = 20
   };
   /// -1 for full reverse, 1 for full forward
   float throttle() const {
@@ -1418,6 +1422,10 @@ struct ControllerState FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool handbrake() const {
     return GetField<uint8_t>(VT_HANDBRAKE, 0) != 0;
   }
+  /// true if you want to press the 'use item' button, used in rumble etc.
+  bool useItem() const {
+    return GetField<uint8_t>(VT_USEITEM, 0) != 0;
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<float>(verifier, VT_THROTTLE) &&
@@ -1428,6 +1436,7 @@ struct ControllerState FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<uint8_t>(verifier, VT_JUMP) &&
            VerifyField<uint8_t>(verifier, VT_BOOST) &&
            VerifyField<uint8_t>(verifier, VT_HANDBRAKE) &&
+           VerifyField<uint8_t>(verifier, VT_USEITEM) &&
            verifier.EndTable();
   }
 };
@@ -1459,6 +1468,9 @@ struct ControllerStateBuilder {
   void add_handbrake(bool handbrake) {
     fbb_.AddElement<uint8_t>(ControllerState::VT_HANDBRAKE, static_cast<uint8_t>(handbrake), 0);
   }
+  void add_useItem(bool useItem) {
+    fbb_.AddElement<uint8_t>(ControllerState::VT_USEITEM, static_cast<uint8_t>(useItem), 0);
+  }
   explicit ControllerStateBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1480,13 +1492,15 @@ inline flatbuffers::Offset<ControllerState> CreateControllerState(
     float roll = 0.0f,
     bool jump = false,
     bool boost = false,
-    bool handbrake = false) {
+    bool handbrake = false,
+    bool useItem = false) {
   ControllerStateBuilder builder_(_fbb);
   builder_.add_roll(roll);
   builder_.add_yaw(yaw);
   builder_.add_pitch(pitch);
   builder_.add_steer(steer);
   builder_.add_throttle(throttle);
+  builder_.add_useItem(useItem);
   builder_.add_handbrake(handbrake);
   builder_.add_boost(boost);
   builder_.add_jump(jump);
