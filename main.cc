@@ -9,13 +9,15 @@
 #include <iostream>
 
 int main(int argc, char** argv) {
+  // Default values that are used when not started by the rlbot framework.
   int botIndex = 0;
   int botTeam = 0;
   std::string botName = "";
 
   std::string interface_dll = std::string(DLLNAME);
 
-  // parse arguments
+  // Parse arguments
+  // These are used when letting the rlbot framework start the bot.
   for (int i = 1; i < argc; ++i) {
     std::string arg(argv[i]);
 

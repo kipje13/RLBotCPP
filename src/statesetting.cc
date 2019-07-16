@@ -70,9 +70,8 @@ CarState::BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder) {
 
 GameState::GameState() {}
 
-void GameState::BuildAndSend() {
-  flatbuffers::FlatBufferBuilder builder(1000);
-
+flatbuffers::Offset<rlbot::flat::DesiredGameState>
+GameState::BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder) {
   auto ballStateOffset = ballState.BuildFlatBuffer(builder);
 
   std::vector<flatbuffers::Offset<rlbot::flat::DesiredCarState>> cars;
@@ -88,10 +87,6 @@ void GameState::BuildAndSend() {
 
   auto carsOffset = builder.CreateVector(cars);
 
-  auto gameStateOffset = rlbot::flat::CreateDesiredGameState(
-      builder, ballStateOffset, carsOffset, 0, 0);
-
-  builder.Finish(gameStateOffset);
-
-  Interface::SetGameState(builder.GetBufferPointer(), builder.GetSize());
+  return rlbot::flat::CreateDesiredGameState(builder, ballStateOffset,
+                                             carsOffset, 0, 0);
 }

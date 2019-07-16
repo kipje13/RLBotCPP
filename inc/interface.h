@@ -2,6 +2,7 @@
 #include "rlbot_generated.h"
 
 #include "matchsettings.h"
+#include "statesetting.h"
 
 #include <string>
 
@@ -44,6 +45,6 @@ class Interface {
   static int RenderGroup(void* data, int size);
   static int SendQuickChat(rlbot::flat::QuickChatSelection message,
                            int botIndex, bool teamOnly);
-  static int SetGameState(void* data, int size);
+  static int SetGameState(GameState state);
   static int StartMatch(MatchSettings settings);
 };

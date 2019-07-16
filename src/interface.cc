@@ -7,9 +7,9 @@
 
 typedef bool (*BoolFunc)(void);
 typedef ByteBuffer (*ByteBufferFunc)(void);
-typedef void (*VoidFunc)(void*);
-typedef int (*SendPacketFunc)(void*, int);
-typedef ByteBuffer(*ReceiveQuickChatFunc)(int, int, int);
+typedef void (*VoidFunc)(void *);
+typedef int (*SendPacketFunc)(void *, int);
+typedef ByteBuffer (*ReceiveQuickChatFunc)(int, int, int);
 
 BoolFunc _isInitialized;
 VoidFunc _free;
@@ -37,20 +37,20 @@ void Interface::LoadInterface(std::string dll) {
       (ByteBufferFunc)GetProcAddress(handle, "UpdateFieldInfoFlatbuffer");
   _getBallPrediction =
       (ByteBufferFunc)GetProcAddress(handle, "GetBallPrediction");
-  _receiveChat =
-	  (ReceiveQuickChatFunc)GetProcAddress(handle, "ReceiveChat");
+  _receiveChat = (ReceiveQuickChatFunc)GetProcAddress(handle, "ReceiveChat");
 
   _updatePlayerInputFlatbuffer =
       (SendPacketFunc)GetProcAddress(handle, "UpdatePlayerInputFlatbuffer");
   _renderGroup = (SendPacketFunc)GetProcAddress(handle, "RenderGroup");
   _sendQuickChat = (SendPacketFunc)GetProcAddress(handle, "SendQuickChat");
   _setGameState = (SendPacketFunc)GetProcAddress(handle, "SetGameState");
-  _startMatchFlatbuffer = (SendPacketFunc)GetProcAddress(handle, "StartMatchFlatbuffer");
+  _startMatchFlatbuffer =
+      (SendPacketFunc)GetProcAddress(handle, "StartMatchFlatbuffer");
 }
 
 bool Interface::IsInitialized() { return _isInitialized(); }
 
-void Interface::Free(void* ptr) { _free(ptr); }
+void Interface::Free(void *ptr) { _free(ptr); }
 
 ByteBuffer Interface::UpdateLiveDataPacketFlatbuffer() {
   return _updateLiveDataPacketFlatbuffer();
@@ -60,10 +60,7 @@ ByteBuffer Interface::UpdateFieldInfoFlatbuffer() {
   return _updateFieldInfoFlatbuffer();
 }
 
-ByteBuffer Interface::GetBallPrediction() 
-{ 
-  return _getBallPrediction(); 
-}
+ByteBuffer Interface::GetBallPrediction() { return _getBallPrediction(); }
 
 int Interface::SetBotInput(Controller input, int index) {
   flatbuffers::FlatBufferBuilder builder(50);
@@ -81,7 +78,7 @@ int Interface::SetBotInput(Controller input, int index) {
                                       builder.GetSize());
 }
 
-int Interface::RenderGroup(void* data, int size) {
+int Interface::RenderGroup(void *data, int size) {
   return _renderGroup(data, size);
 }
 
@@ -96,8 +93,11 @@ int Interface::SendQuickChat(rlbot::flat::QuickChatSelection message,
   return _sendQuickChat(builder.GetBufferPointer(), builder.GetSize());
 }
 
-int Interface::SetGameState(void* data, int size) {
-  return _setGameState(data, size);
+int Interface::SetGameState(GameState state) {
+  flatbuffers::FlatBufferBuilder builder(1000);
+  builder.Finish(state.BuildFlatBuffer(builder));
+
+  return _setGameState(builder.GetBufferPointer(), builder.GetSize());
 }
 
 int Interface::StartMatch(MatchSettings settings) {

@@ -52,5 +52,7 @@ class GameState {
   std::array<std::optional<CarState>, 8> carStates;
 
   GameState();
-  void BuildAndSend();
+
+  flatbuffers::Offset<rlbot::flat::DesiredGameState>
+	  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
