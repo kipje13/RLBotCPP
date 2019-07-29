@@ -2,6 +2,7 @@
 
 #include "bot.h"
 
+#include "platform.h"
 #include "server.h"
 
 #include <cstdint>
@@ -12,8 +13,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-
-#include <windows.h>
 
 struct BotInstance {
   Bot *bot;
@@ -62,10 +61,10 @@ public:
 
           lasttime = gametickpacket->gameInfo()->secondsElapsed();
         } else {
-          Sleep(1);
+          Platform::Sleep(1);
         }
       } else {
-        Sleep(100);
+        Platform::Sleep(100);
       }
 
       Interface::Free(flatbufferData.ptr);

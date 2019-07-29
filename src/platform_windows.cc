@@ -8,6 +8,20 @@
 #include <direct.h>
 #include <windows.h>
 
+ModuleHandle Platform::LoadDll(const char *filename) {
+  ModuleHandle handle;
+  handle.platform_specific = LoadLibrary(filename);
+  return handle;
+}
+
+void *Platform::GetFunctionAddress(ModuleHandle handle, const char *procname) {
+  return GetProcAddress(handle.platform_specific, procname);
+}
+
+void Platform::FreeDll(ModuleHandle handle) {
+  FreeLibrary(handle.platform_specific);
+}
+
 void Platform::SetWorkingDirectory(std::string directory) {
   _chdir(directory.c_str());
 }

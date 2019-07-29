@@ -1,9 +1,9 @@
 #include "interface.h"
 
+#include "platform.h"
+
 #include "flatbuffers/flatbuffers.h"
 #include "rlbot_generated.h"
-
-#include <windows.h>
 
 typedef bool (*BoolFunc)(void);
 typedef ByteBuffer (*ByteBufferFunc)(void);
@@ -26,26 +26,32 @@ SendPacketFunc _setGameState;
 SendPacketFunc _startMatchFlatbuffer;
 
 void Interface::LoadInterface(std::string dll) {
-  HMODULE handle = LoadLibrary(dll.c_str());
+  ModuleHandle handle = Platform::LoadDll(dll.c_str());
 
-  _isInitialized = (BoolFunc)GetProcAddress(handle, "IsInitialized");
-  _free = (VoidFunc)GetProcAddress(handle, "Free");
+  _isInitialized =
+      (BoolFunc)Platform::GetFunctionAddress(handle, "IsInitialized");
+  _free = (VoidFunc)Platform::GetFunctionAddress(handle, "Free");
 
   _updateLiveDataPacketFlatbuffer =
-      (ByteBufferFunc)GetProcAddress(handle, "UpdateLiveDataPacketFlatbuffer");
-  _updateFieldInfoFlatbuffer =
-      (ByteBufferFunc)GetProcAddress(handle, "UpdateFieldInfoFlatbuffer");
+      (ByteBufferFunc)Platform::GetFunctionAddress(
+          handle, "UpdateLiveDataPacketFlatbuffer");
+  _updateFieldInfoFlatbuffer = (ByteBufferFunc)Platform::GetFunctionAddress(
+      handle, "UpdateFieldInfoFlatbuffer");
   _getBallPrediction =
-      (ByteBufferFunc)GetProcAddress(handle, "GetBallPrediction");
-  _receiveChat = (ReceiveQuickChatFunc)GetProcAddress(handle, "ReceiveChat");
+      (ByteBufferFunc)Platform::GetFunctionAddress(handle, "GetBallPrediction");
+  _receiveChat =
+      (ReceiveQuickChatFunc)Platform::GetFunctionAddress(handle, "ReceiveChat");
 
-  _updatePlayerInputFlatbuffer =
-      (SendPacketFunc)GetProcAddress(handle, "UpdatePlayerInputFlatbuffer");
-  _renderGroup = (SendPacketFunc)GetProcAddress(handle, "RenderGroup");
-  _sendQuickChat = (SendPacketFunc)GetProcAddress(handle, "SendQuickChat");
-  _setGameState = (SendPacketFunc)GetProcAddress(handle, "SetGameState");
-  _startMatchFlatbuffer =
-      (SendPacketFunc)GetProcAddress(handle, "StartMatchFlatbuffer");
+  _updatePlayerInputFlatbuffer = (SendPacketFunc)Platform::GetFunctionAddress(
+      handle, "UpdatePlayerInputFlatbuffer");
+  _renderGroup =
+      (SendPacketFunc)Platform::GetFunctionAddress(handle, "RenderGroup");
+  _sendQuickChat =
+      (SendPacketFunc)Platform::GetFunctionAddress(handle, "SendQuickChat");
+  _setGameState =
+      (SendPacketFunc)Platform::GetFunctionAddress(handle, "SetGameState");
+  _startMatchFlatbuffer = (SendPacketFunc)Platform::GetFunctionAddress(
+      handle, "StartMatchFlatbuffer");
 }
 
 bool Interface::IsInitialized() { return _isInitialized(); }
