@@ -8,6 +8,7 @@ set(source_files
   ${PROJECT_SOURCE_DIR}/src/namedrenderer.cc
   ${PROJECT_SOURCE_DIR}/src/platform_windows.cc
   ${PROJECT_SOURCE_DIR}/src/renderer.cc
+  ${PROJECT_SOURCE_DIR}/src/scopedrenderer.cc
   ${PROJECT_SOURCE_DIR}/src/server.cc
   ${PROJECT_SOURCE_DIR}/src/sockets.cc
   ${PROJECT_SOURCE_DIR}/src/statesetting.cc
@@ -23,6 +24,7 @@ set(header_files
   ${PROJECT_SOURCE_DIR}/inc/namedrenderer.h
   ${PROJECT_SOURCE_DIR}/inc/platform.h
   ${PROJECT_SOURCE_DIR}/inc/renderer.h
+  ${PROJECT_SOURCE_DIR}/inc/scopedrenderer.h
   ${PROJECT_SOURCE_DIR}/inc/server.h
   ${PROJECT_SOURCE_DIR}/inc/sockets.h
   ${PROJECT_SOURCE_DIR}/inc/statesetting.h
