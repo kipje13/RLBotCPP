@@ -40,9 +40,10 @@ class Interface {
   static ByteBuffer UpdateLiveDataPacketFlatbuffer();
   static ByteBuffer UpdateFieldInfoFlatbuffer();
   static ByteBuffer GetBallPrediction();
+  static ByteBuffer GetMatchSettings();
 
   static int SetBotInput(Controller input, int index);
-  static int RenderGroup(void* data, int size);
+  static int RenderGroup(void* data, flatbuffers::uoffset_t size);
   static int SendQuickChat(rlbot::flat::QuickChatSelection message,
                            int botIndex, bool teamOnly);
   static int SetGameState(GameState state);

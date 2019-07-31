@@ -17,6 +17,7 @@ VoidFunc _free;
 ByteBufferFunc _updateLiveDataPacketFlatbuffer;
 ByteBufferFunc _updateFieldInfoFlatbuffer;
 ByteBufferFunc _getBallPrediction;
+ByteBufferFunc _getMatchSettings;
 ReceiveQuickChatFunc _receiveChat;
 
 SendPacketFunc _updatePlayerInputFlatbuffer;
@@ -39,6 +40,8 @@ void Interface::LoadInterface(std::string dll) {
       handle, "UpdateFieldInfoFlatbuffer");
   _getBallPrediction =
       (ByteBufferFunc)Platform::GetFunctionAddress(handle, "GetBallPrediction");
+  _getMatchSettings =
+      (ByteBufferFunc)Platform::GetFunctionAddress(handle, "GetMatchSettings");
   _receiveChat =
       (ReceiveQuickChatFunc)Platform::GetFunctionAddress(handle, "ReceiveChat");
 
@@ -68,6 +71,8 @@ ByteBuffer Interface::UpdateFieldInfoFlatbuffer() {
 
 ByteBuffer Interface::GetBallPrediction() { return _getBallPrediction(); }
 
+ByteBuffer Interface::GetMatchSettings() { return _getMatchSettings(); }
+
 int Interface::SetBotInput(Controller input, int index) {
   flatbuffers::FlatBufferBuilder builder(50);
 
@@ -84,7 +89,7 @@ int Interface::SetBotInput(Controller input, int index) {
                                       builder.GetSize());
 }
 
-int Interface::RenderGroup(void *data, int size) {
+int Interface::RenderGroup(void *data, flatbuffers::uoffset_t size) {
   return _renderGroup(data, size);
 }
 

@@ -1029,7 +1029,7 @@ inline const char *EnumNameBoostOption(BoostOption e) {
 }
 
 enum RumbleOption {
-  RumbleOption_None = 0,
+  RumbleOption_No_Rumble = 0,
   RumbleOption_Default = 1,
   RumbleOption_Slow = 2,
   RumbleOption_Civilized = 3,
@@ -1037,13 +1037,13 @@ enum RumbleOption {
   RumbleOption_Spring_Loaded = 5,
   RumbleOption_Spikes_Only = 6,
   RumbleOption_Spike_Rush = 7,
-  RumbleOption_MIN = RumbleOption_None,
+  RumbleOption_MIN = RumbleOption_No_Rumble,
   RumbleOption_MAX = RumbleOption_Spike_Rush
 };
 
 inline const RumbleOption (&EnumValuesRumbleOption())[8] {
   static const RumbleOption values[] = {
-    RumbleOption_None,
+    RumbleOption_No_Rumble,
     RumbleOption_Default,
     RumbleOption_Slow,
     RumbleOption_Civilized,
@@ -1057,7 +1057,7 @@ inline const RumbleOption (&EnumValuesRumbleOption())[8] {
 
 inline const char * const *EnumNamesRumbleOption() {
   static const char * const names[] = {
-    "None",
+    "No_Rumble",
     "Default",
     "Slow",
     "Civilized",
@@ -1564,7 +1564,8 @@ struct Touch FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_GAMESECONDS = 6,
     VT_LOCATION = 8,
     VT_NORMAL = 10,
-    VT_TEAM = 12
+    VT_TEAM = 12,
+    VT_PLAYERINDEX = 14
   };
   /// The name of the player involved with the touch.
   const flatbuffers::String *playerName() const {
@@ -1586,6 +1587,10 @@ struct Touch FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   int32_t team() const {
     return GetField<int32_t>(VT_TEAM, 0);
   }
+  /// The index of the player involved with the touch.
+  int32_t playerIndex() const {
+    return GetField<int32_t>(VT_PLAYERINDEX, 0);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PLAYERNAME) &&
@@ -1594,6 +1599,7 @@ struct Touch FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<Vector3>(verifier, VT_LOCATION) &&
            VerifyField<Vector3>(verifier, VT_NORMAL) &&
            VerifyField<int32_t>(verifier, VT_TEAM) &&
+           VerifyField<int32_t>(verifier, VT_PLAYERINDEX) &&
            verifier.EndTable();
   }
 };
@@ -1616,6 +1622,9 @@ struct TouchBuilder {
   void add_team(int32_t team) {
     fbb_.AddElement<int32_t>(Touch::VT_TEAM, team, 0);
   }
+  void add_playerIndex(int32_t playerIndex) {
+    fbb_.AddElement<int32_t>(Touch::VT_PLAYERINDEX, playerIndex, 0);
+  }
   explicit TouchBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1634,8 +1643,10 @@ inline flatbuffers::Offset<Touch> CreateTouch(
     float gameSeconds = 0.0f,
     const Vector3 *location = 0,
     const Vector3 *normal = 0,
-    int32_t team = 0) {
+    int32_t team = 0,
+    int32_t playerIndex = 0) {
   TouchBuilder builder_(_fbb);
+  builder_.add_playerIndex(playerIndex);
   builder_.add_team(team);
   builder_.add_normal(normal);
   builder_.add_location(location);
@@ -1650,14 +1661,16 @@ inline flatbuffers::Offset<Touch> CreateTouchDirect(
     float gameSeconds = 0.0f,
     const Vector3 *location = 0,
     const Vector3 *normal = 0,
-    int32_t team = 0) {
+    int32_t team = 0,
+    int32_t playerIndex = 0) {
   return rlbot::flat::CreateTouch(
       _fbb,
       playerName ? _fbb.CreateString(playerName) : 0,
       gameSeconds,
       location,
       normal,
-      team);
+      team,
+      playerIndex);
 }
 
 struct ScoreInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -4802,7 +4815,7 @@ inline flatbuffers::Offset<MutatorSettings> CreateMutatorSettings(
     BallSizeOption ballSizeOption = BallSizeOption_Default,
     BallBouncinessOption ballBouncinessOption = BallBouncinessOption_Default,
     BoostOption boostOption = BoostOption_Normal_Boost,
-    RumbleOption rumbleOption = RumbleOption_None,
+    RumbleOption rumbleOption = RumbleOption_No_Rumble,
     BoostStrengthOption boostStrengthOption = BoostStrengthOption_One,
     GravityOption gravityOption = GravityOption_Default,
     DemolishOption demolishOption = DemolishOption_Default,
