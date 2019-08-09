@@ -3,6 +3,7 @@
 #include "flatbuffers/flatbuffers.h"
 #include "interface.h"
 
+namespace rlbotcpp {
 NamedRenderer::NamedRenderer(std::string name)
     : Renderer(std::hash<std::string>()(name)) {}
 
@@ -11,3 +12,4 @@ void NamedRenderer::FinishAndSend() {
   Interface::RenderGroup(flatBufferBuilder.GetBufferPointer(),
                          flatBufferBuilder.GetSize());
 }
+} // namespace rlbotcpp

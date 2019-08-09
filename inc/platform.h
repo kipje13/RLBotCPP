@@ -5,6 +5,8 @@
 #include <string>
 #include <thread>
 
+namespace rlbotcpp {
+namespace platform {
 #ifdef _WIN32
 #include "windows.h"
 
@@ -13,16 +15,15 @@ struct ModuleHandle {
 };
 #endif
 
-class Platform {
-public:
-  static ModuleHandle LoadDll(const char *filename);
-  static void *GetFunctionAddress(ModuleHandle handle, const char *procname);
-  static void FreeDll(ModuleHandle handle);
+ModuleHandle LoadDll(const char *filename);
+void *GetFunctionAddress(ModuleHandle handle, const char *procname);
+void FreeDll(ModuleHandle handle);
 
-  static void SetWorkingDirectory(std::string directory);
-  static std::string GetExecutableDirectory();
+void SetWorkingDirectory(std::string directory);
+std::string GetExecutableDirectory();
 
-  static void Sleep(uint32_t ms) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-  }
-};
+void Sleep(uint32_t ms) {
+  std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+} // namespace platform
+} // namespace rlbotcpp

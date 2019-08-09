@@ -6,6 +6,7 @@
 #include <array>
 #include <optional>
 
+namespace rlbotcpp {
 struct DesiredVector3 {
   float x, y, z;
 };
@@ -15,7 +16,7 @@ struct DesiredRotator {
 };
 
 class PhysicsState {
- public:
+public:
   std::optional<DesiredVector3> location;
   std::optional<DesiredVector3> velocity;
   std::optional<DesiredRotator> rotation;
@@ -24,35 +25,36 @@ class PhysicsState {
   PhysicsState();
 
   flatbuffers::Offset<rlbot::flat::DesiredPhysics>
-	  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
+  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
 
 class BallState {
- public:
+public:
   PhysicsState physicsState;
 
   BallState();
 
   flatbuffers::Offset<rlbot::flat::DesiredBallState>
-	  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
+  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
 
 class CarState {
- public:
+public:
   PhysicsState physicsState;
   std::optional<int> boostAmount;
 
   flatbuffers::Offset<rlbot::flat::DesiredCarState>
-	  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
+  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
 
 class GameState {
- public:
+public:
   BallState ballState;
   std::array<std::optional<CarState>, 8> carStates;
 
   GameState();
 
   flatbuffers::Offset<rlbot::flat::DesiredGameState>
-	  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
+  BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
+} // namespace rlbotcpp

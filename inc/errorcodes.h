@@ -1,5 +1,6 @@
 #pragma once
 
+namespace rlbotcpp {
 enum RLBotCoreStatus {
   Success,
   BufferOverfilled,
@@ -23,3 +24,4 @@ enum RLBotCoreStatus {
   QuickChatRateExceeded,
   NotInitialized
 };
+}

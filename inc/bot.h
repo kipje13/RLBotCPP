@@ -4,17 +4,19 @@
 
 #include <string>
 
+namespace rlbotcpp {
 class Bot {
- public:
+public:
   int index;
   int team;
   std::string name;
 
   Bot(int index, int team, std::string name);
-  virtual Controller GetOutput(
-      const rlbot::flat::GameTickPacket* gameTickPacket,
-      const rlbot::flat::FieldInfo* fieldInfo,
-      const rlbot::flat::BallPrediction* ballPrediction);
+  virtual Controller
+  GetOutput(const rlbot::flat::GameTickPacket *gameTickPacket,
+            const rlbot::flat::FieldInfo *fieldInfo,
+            const rlbot::flat::BallPrediction *ballPrediction);
 
   void SendQuickChat(rlbot::flat::QuickChatSelection message, bool teamOnly);
 };
+} // namespace rlbotcpp

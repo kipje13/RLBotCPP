@@ -8,7 +8,9 @@
 typedef SOCKET socket_t;
 #endif
 
-namespace Sockets {
+namespace rlbotcpp {
+namespace sockets {
+
 struct ListenSocket {
   socket_t internal_socket;
 };
@@ -26,4 +28,5 @@ Socket ListenSocketAccept(ListenSocket listenSocket);
 
 std::string SocketRecieveString(Socket socket);
 void SocketClose(Socket socket);
-} // namespace Sockets
+} // namespace sockets
+} // namespace rlbotcpp

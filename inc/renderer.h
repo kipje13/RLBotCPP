@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <vector>
 
+namespace rlbotcpp {
 struct Color {
   uint8_t r;
   uint8_t g;
@@ -34,3 +35,4 @@ protected:
   flatbuffers::FlatBufferBuilder flatBufferBuilder;
   void Finish();
 };
+} // namespace rlbotcpp

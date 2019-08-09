@@ -5,6 +5,7 @@
 #include "flatbuffers/flatbuffers.h"
 #include "rlbot_generated.h"
 
+namespace rlbotcpp {
 typedef bool (*BoolFunc)(void);
 typedef ByteBuffer (*ByteBufferFunc)(void);
 typedef void (*VoidFunc)(void *);
@@ -27,33 +28,33 @@ SendPacketFunc _setGameState;
 SendPacketFunc _startMatchFlatbuffer;
 
 void Interface::LoadInterface(std::string dll) {
-  ModuleHandle handle = Platform::LoadDll(dll.c_str());
+  platform::ModuleHandle handle = platform::LoadDll(dll.c_str());
 
   _isInitialized =
-      (BoolFunc)Platform::GetFunctionAddress(handle, "IsInitialized");
-  _free = (VoidFunc)Platform::GetFunctionAddress(handle, "Free");
+      (BoolFunc)platform::GetFunctionAddress(handle, "IsInitialized");
+  _free = (VoidFunc)platform::GetFunctionAddress(handle, "Free");
 
   _updateLiveDataPacketFlatbuffer =
-      (ByteBufferFunc)Platform::GetFunctionAddress(
+      (ByteBufferFunc)platform::GetFunctionAddress(
           handle, "UpdateLiveDataPacketFlatbuffer");
-  _updateFieldInfoFlatbuffer = (ByteBufferFunc)Platform::GetFunctionAddress(
+  _updateFieldInfoFlatbuffer = (ByteBufferFunc)platform::GetFunctionAddress(
       handle, "UpdateFieldInfoFlatbuffer");
   _getBallPrediction =
-      (ByteBufferFunc)Platform::GetFunctionAddress(handle, "GetBallPrediction");
+      (ByteBufferFunc)platform::GetFunctionAddress(handle, "GetBallPrediction");
   _getMatchSettings =
-      (ByteBufferFunc)Platform::GetFunctionAddress(handle, "GetMatchSettings");
+      (ByteBufferFunc)platform::GetFunctionAddress(handle, "GetMatchSettings");
   _receiveChat =
-      (ReceiveQuickChatFunc)Platform::GetFunctionAddress(handle, "ReceiveChat");
+      (ReceiveQuickChatFunc)platform::GetFunctionAddress(handle, "ReceiveChat");
 
-  _updatePlayerInputFlatbuffer = (SendPacketFunc)Platform::GetFunctionAddress(
+  _updatePlayerInputFlatbuffer = (SendPacketFunc)platform::GetFunctionAddress(
       handle, "UpdatePlayerInputFlatbuffer");
   _renderGroup =
-      (SendPacketFunc)Platform::GetFunctionAddress(handle, "RenderGroup");
+      (SendPacketFunc)platform::GetFunctionAddress(handle, "RenderGroup");
   _sendQuickChat =
-      (SendPacketFunc)Platform::GetFunctionAddress(handle, "SendQuickChat");
+      (SendPacketFunc)platform::GetFunctionAddress(handle, "SendQuickChat");
   _setGameState =
-      (SendPacketFunc)Platform::GetFunctionAddress(handle, "SetGameState");
-  _startMatchFlatbuffer = (SendPacketFunc)Platform::GetFunctionAddress(
+      (SendPacketFunc)platform::GetFunctionAddress(handle, "SetGameState");
+  _startMatchFlatbuffer = (SendPacketFunc)platform::GetFunctionAddress(
       handle, "StartMatchFlatbuffer");
 }
 
@@ -117,3 +118,4 @@ int Interface::StartMatch(MatchSettings settings) {
 
   return _startMatchFlatbuffer(builder.GetBufferPointer(), builder.GetSize());
 }
+} // namespace rlbotcpp

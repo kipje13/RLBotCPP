@@ -19,6 +19,12 @@ struct Rotator;
 
 struct Quaternion;
 
+struct BoxShape;
+
+struct SphereShape;
+
+struct CylinderShape;
+
 struct Touch;
 
 struct ScoreInfo;
@@ -112,6 +118,60 @@ struct MutatorSettings;
 struct MatchSettings;
 
 struct QuickChatMessages;
+
+enum CollisionShape {
+  CollisionShape_NONE = 0,
+  CollisionShape_BoxShape = 1,
+  CollisionShape_SphereShape = 2,
+  CollisionShape_CylinderShape = 3,
+  CollisionShape_MIN = CollisionShape_NONE,
+  CollisionShape_MAX = CollisionShape_CylinderShape
+};
+
+inline const CollisionShape (&EnumValuesCollisionShape())[4] {
+  static const CollisionShape values[] = {
+    CollisionShape_NONE,
+    CollisionShape_BoxShape,
+    CollisionShape_SphereShape,
+    CollisionShape_CylinderShape
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesCollisionShape() {
+  static const char * const names[] = {
+    "NONE",
+    "BoxShape",
+    "SphereShape",
+    "CylinderShape",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameCollisionShape(CollisionShape e) {
+  const size_t index = static_cast<int>(e);
+  return EnumNamesCollisionShape()[index];
+}
+
+template<typename T> struct CollisionShapeTraits {
+  static const CollisionShape enum_value = CollisionShape_NONE;
+};
+
+template<> struct CollisionShapeTraits<BoxShape> {
+  static const CollisionShape enum_value = CollisionShape_BoxShape;
+};
+
+template<> struct CollisionShapeTraits<SphereShape> {
+  static const CollisionShape enum_value = CollisionShape_SphereShape;
+};
+
+template<> struct CollisionShapeTraits<CylinderShape> {
+  static const CollisionShape enum_value = CollisionShape_CylinderShape;
+};
+
+bool VerifyCollisionShape(flatbuffers::Verifier &verifier, const void *obj, CollisionShape type);
+bool VerifyCollisionShapeVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types);
 
 enum TileState {
   TileState_Unknown = 0  /// The default state of the tiles.
@@ -1558,6 +1618,156 @@ inline flatbuffers::Offset<PlayerInput> CreatePlayerInput(
   return builder_.Finish();
 }
 
+struct BoxShape FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_LENGTH = 4,
+    VT_WIDTH = 6,
+    VT_HEIGHT = 8
+  };
+  float length() const {
+    return GetField<float>(VT_LENGTH, 0.0f);
+  }
+  float width() const {
+    return GetField<float>(VT_WIDTH, 0.0f);
+  }
+  float height() const {
+    return GetField<float>(VT_HEIGHT, 0.0f);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_LENGTH) &&
+           VerifyField<float>(verifier, VT_WIDTH) &&
+           VerifyField<float>(verifier, VT_HEIGHT) &&
+           verifier.EndTable();
+  }
+};
+
+struct BoxShapeBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_length(float length) {
+    fbb_.AddElement<float>(BoxShape::VT_LENGTH, length, 0.0f);
+  }
+  void add_width(float width) {
+    fbb_.AddElement<float>(BoxShape::VT_WIDTH, width, 0.0f);
+  }
+  void add_height(float height) {
+    fbb_.AddElement<float>(BoxShape::VT_HEIGHT, height, 0.0f);
+  }
+  explicit BoxShapeBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  BoxShapeBuilder &operator=(const BoxShapeBuilder &);
+  flatbuffers::Offset<BoxShape> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<BoxShape>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<BoxShape> CreateBoxShape(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    float length = 0.0f,
+    float width = 0.0f,
+    float height = 0.0f) {
+  BoxShapeBuilder builder_(_fbb);
+  builder_.add_height(height);
+  builder_.add_width(width);
+  builder_.add_length(length);
+  return builder_.Finish();
+}
+
+struct SphereShape FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_DIAMETER = 4
+  };
+  float diameter() const {
+    return GetField<float>(VT_DIAMETER, 0.0f);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_DIAMETER) &&
+           verifier.EndTable();
+  }
+};
+
+struct SphereShapeBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_diameter(float diameter) {
+    fbb_.AddElement<float>(SphereShape::VT_DIAMETER, diameter, 0.0f);
+  }
+  explicit SphereShapeBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  SphereShapeBuilder &operator=(const SphereShapeBuilder &);
+  flatbuffers::Offset<SphereShape> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<SphereShape>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<SphereShape> CreateSphereShape(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    float diameter = 0.0f) {
+  SphereShapeBuilder builder_(_fbb);
+  builder_.add_diameter(diameter);
+  return builder_.Finish();
+}
+
+struct CylinderShape FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_DIAMETER = 4,
+    VT_HEIGHT = 6
+  };
+  float diameter() const {
+    return GetField<float>(VT_DIAMETER, 0.0f);
+  }
+  float height() const {
+    return GetField<float>(VT_HEIGHT, 0.0f);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_DIAMETER) &&
+           VerifyField<float>(verifier, VT_HEIGHT) &&
+           verifier.EndTable();
+  }
+};
+
+struct CylinderShapeBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_diameter(float diameter) {
+    fbb_.AddElement<float>(CylinderShape::VT_DIAMETER, diameter, 0.0f);
+  }
+  void add_height(float height) {
+    fbb_.AddElement<float>(CylinderShape::VT_HEIGHT, height, 0.0f);
+  }
+  explicit CylinderShapeBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  CylinderShapeBuilder &operator=(const CylinderShapeBuilder &);
+  flatbuffers::Offset<CylinderShape> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<CylinderShape>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<CylinderShape> CreateCylinderShape(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    float diameter = 0.0f,
+    float height = 0.0f) {
+  CylinderShapeBuilder builder_(_fbb);
+  builder_.add_height(height);
+  builder_.add_diameter(diameter);
+  return builder_.Finish();
+}
+
 struct Touch FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_PLAYERNAME = 4,
@@ -1855,7 +2065,8 @@ struct PlayerInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_DOUBLEJUMPED = 18,
     VT_NAME = 20,
     VT_TEAM = 22,
-    VT_BOOST = 24
+    VT_BOOST = 24,
+    VT_HITBOX = 26
   };
   const Physics *physics() const {
     return GetPointer<const Physics *>(VT_PHYSICS);
@@ -1894,6 +2105,9 @@ struct PlayerInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   int32_t boost() const {
     return GetField<int32_t>(VT_BOOST, 0);
   }
+  const BoxShape *hitbox() const {
+    return GetPointer<const BoxShape *>(VT_HITBOX);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PHYSICS) &&
@@ -1910,6 +2124,8 @@ struct PlayerInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.Verify(name()) &&
            VerifyField<int32_t>(verifier, VT_TEAM) &&
            VerifyField<int32_t>(verifier, VT_BOOST) &&
+           VerifyOffset(verifier, VT_HITBOX) &&
+           verifier.VerifyTable(hitbox()) &&
            verifier.EndTable();
   }
 };
@@ -1950,6 +2166,9 @@ struct PlayerInfoBuilder {
   void add_boost(int32_t boost) {
     fbb_.AddElement<int32_t>(PlayerInfo::VT_BOOST, boost, 0);
   }
+  void add_hitbox(flatbuffers::Offset<BoxShape> hitbox) {
+    fbb_.AddOffset(PlayerInfo::VT_HITBOX, hitbox);
+  }
   explicit PlayerInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1974,8 +2193,10 @@ inline flatbuffers::Offset<PlayerInfo> CreatePlayerInfo(
     bool doubleJumped = false,
     flatbuffers::Offset<flatbuffers::String> name = 0,
     int32_t team = 0,
-    int32_t boost = 0) {
+    int32_t boost = 0,
+    flatbuffers::Offset<BoxShape> hitbox = 0) {
   PlayerInfoBuilder builder_(_fbb);
+  builder_.add_hitbox(hitbox);
   builder_.add_boost(boost);
   builder_.add_team(team);
   builder_.add_name(name);
@@ -2002,7 +2223,8 @@ inline flatbuffers::Offset<PlayerInfo> CreatePlayerInfoDirect(
     bool doubleJumped = false,
     const char *name = nullptr,
     int32_t team = 0,
-    int32_t boost = 0) {
+    int32_t boost = 0,
+    flatbuffers::Offset<BoxShape> hitbox = 0) {
   return rlbot::flat::CreatePlayerInfo(
       _fbb,
       physics,
@@ -2015,7 +2237,8 @@ inline flatbuffers::Offset<PlayerInfo> CreatePlayerInfoDirect(
       doubleJumped,
       name ? _fbb.CreateString(name) : 0,
       team,
-      boost);
+      boost,
+      hitbox);
 }
 
 struct DropShotBallInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -2082,7 +2305,9 @@ struct BallInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_PHYSICS = 4,
     VT_LATESTTOUCH = 6,
-    VT_DROPSHOTINFO = 8
+    VT_DROPSHOTINFO = 8,
+    VT_SHAPE_TYPE = 10,
+    VT_SHAPE = 12
   };
   const Physics *physics() const {
     return GetPointer<const Physics *>(VT_PHYSICS);
@@ -2093,6 +2318,22 @@ struct BallInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const DropShotBallInfo *dropShotInfo() const {
     return GetPointer<const DropShotBallInfo *>(VT_DROPSHOTINFO);
   }
+  CollisionShape shape_type() const {
+    return static_cast<CollisionShape>(GetField<uint8_t>(VT_SHAPE_TYPE, 0));
+  }
+  const void *shape() const {
+    return GetPointer<const void *>(VT_SHAPE);
+  }
+  template<typename T> const T *shape_as() const;
+  const BoxShape *shape_as_BoxShape() const {
+    return shape_type() == CollisionShape_BoxShape ? static_cast<const BoxShape *>(shape()) : nullptr;
+  }
+  const SphereShape *shape_as_SphereShape() const {
+    return shape_type() == CollisionShape_SphereShape ? static_cast<const SphereShape *>(shape()) : nullptr;
+  }
+  const CylinderShape *shape_as_CylinderShape() const {
+    return shape_type() == CollisionShape_CylinderShape ? static_cast<const CylinderShape *>(shape()) : nullptr;
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PHYSICS) &&
@@ -2101,9 +2342,24 @@ struct BallInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyTable(latestTouch()) &&
            VerifyOffset(verifier, VT_DROPSHOTINFO) &&
            verifier.VerifyTable(dropShotInfo()) &&
+           VerifyField<uint8_t>(verifier, VT_SHAPE_TYPE) &&
+           VerifyOffset(verifier, VT_SHAPE) &&
+           VerifyCollisionShape(verifier, shape(), shape_type()) &&
            verifier.EndTable();
   }
 };
+
+template<> inline const BoxShape *BallInfo::shape_as<BoxShape>() const {
+  return shape_as_BoxShape();
+}
+
+template<> inline const SphereShape *BallInfo::shape_as<SphereShape>() const {
+  return shape_as_SphereShape();
+}
+
+template<> inline const CylinderShape *BallInfo::shape_as<CylinderShape>() const {
+  return shape_as_CylinderShape();
+}
 
 struct BallInfoBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
@@ -2116,6 +2372,12 @@ struct BallInfoBuilder {
   }
   void add_dropShotInfo(flatbuffers::Offset<DropShotBallInfo> dropShotInfo) {
     fbb_.AddOffset(BallInfo::VT_DROPSHOTINFO, dropShotInfo);
+  }
+  void add_shape_type(CollisionShape shape_type) {
+    fbb_.AddElement<uint8_t>(BallInfo::VT_SHAPE_TYPE, static_cast<uint8_t>(shape_type), 0);
+  }
+  void add_shape(flatbuffers::Offset<void> shape) {
+    fbb_.AddOffset(BallInfo::VT_SHAPE, shape);
   }
   explicit BallInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -2133,11 +2395,15 @@ inline flatbuffers::Offset<BallInfo> CreateBallInfo(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<Physics> physics = 0,
     flatbuffers::Offset<Touch> latestTouch = 0,
-    flatbuffers::Offset<DropShotBallInfo> dropShotInfo = 0) {
+    flatbuffers::Offset<DropShotBallInfo> dropShotInfo = 0,
+    CollisionShape shape_type = CollisionShape_NONE,
+    flatbuffers::Offset<void> shape = 0) {
   BallInfoBuilder builder_(_fbb);
+  builder_.add_shape(shape);
   builder_.add_dropShotInfo(dropShotInfo);
   builder_.add_latestTouch(latestTouch);
   builder_.add_physics(physics);
+  builder_.add_shape_type(shape_type);
   return builder_.Finish();
 }
 
@@ -2776,7 +3042,9 @@ struct GoalInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_TEAMNUM = 4,
     VT_LOCATION = 6,
-    VT_DIRECTION = 8
+    VT_DIRECTION = 8,
+    VT_WIDTH = 10,
+    VT_HEIGHT = 12
   };
   int32_t teamNum() const {
     return GetField<int32_t>(VT_TEAMNUM, 0);
@@ -2787,11 +3055,19 @@ struct GoalInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const Vector3 *direction() const {
     return GetStruct<const Vector3 *>(VT_DIRECTION);
   }
+  float width() const {
+    return GetField<float>(VT_WIDTH, 0.0f);
+  }
+  float height() const {
+    return GetField<float>(VT_HEIGHT, 0.0f);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_TEAMNUM) &&
            VerifyField<Vector3>(verifier, VT_LOCATION) &&
            VerifyField<Vector3>(verifier, VT_DIRECTION) &&
+           VerifyField<float>(verifier, VT_WIDTH) &&
+           VerifyField<float>(verifier, VT_HEIGHT) &&
            verifier.EndTable();
   }
 };
@@ -2807,6 +3083,12 @@ struct GoalInfoBuilder {
   }
   void add_direction(const Vector3 *direction) {
     fbb_.AddStruct(GoalInfo::VT_DIRECTION, direction);
+  }
+  void add_width(float width) {
+    fbb_.AddElement<float>(GoalInfo::VT_WIDTH, width, 0.0f);
+  }
+  void add_height(float height) {
+    fbb_.AddElement<float>(GoalInfo::VT_HEIGHT, height, 0.0f);
   }
   explicit GoalInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -2824,8 +3106,12 @@ inline flatbuffers::Offset<GoalInfo> CreateGoalInfo(
     flatbuffers::FlatBufferBuilder &_fbb,
     int32_t teamNum = 0,
     const Vector3 *location = 0,
-    const Vector3 *direction = 0) {
+    const Vector3 *direction = 0,
+    float width = 0.0f,
+    float height = 0.0f) {
   GoalInfoBuilder builder_(_fbb);
+  builder_.add_height(height);
+  builder_.add_width(width);
   builder_.add_direction(direction);
   builder_.add_location(location);
   builder_.add_teamNum(teamNum);
@@ -5011,6 +5297,39 @@ inline flatbuffers::Offset<QuickChatMessages> CreateQuickChatMessagesDirect(
   return rlbot::flat::CreateQuickChatMessages(
       _fbb,
       messages ? _fbb.CreateVector<flatbuffers::Offset<QuickChat>>(*messages) : 0);
+}
+
+inline bool VerifyCollisionShape(flatbuffers::Verifier &verifier, const void *obj, CollisionShape type) {
+  switch (type) {
+    case CollisionShape_NONE: {
+      return true;
+    }
+    case CollisionShape_BoxShape: {
+      auto ptr = reinterpret_cast<const BoxShape *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case CollisionShape_SphereShape: {
+      auto ptr = reinterpret_cast<const SphereShape *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case CollisionShape_CylinderShape: {
+      auto ptr = reinterpret_cast<const CylinderShape *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    default: return false;
+  }
+}
+
+inline bool VerifyCollisionShapeVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types) {
+  if (!values || !types) return !values && !types;
+  if (values->size() != types->size()) return false;
+  for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+    if (!VerifyCollisionShape(
+        verifier,  values->Get(i), types->GetEnum<CollisionShape>(i))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 inline bool VerifyPlayerClass(flatbuffers::Verifier &verifier, const void *obj, PlayerClass type) {

@@ -2,6 +2,7 @@
 
 #include "interface.h"
 
+namespace rlbotcpp {
 flatbuffers::Offset<rlbot::flat::Color>
 buildColor(flatbuffers::FlatBufferBuilder &builder, Color color) {
   return rlbot::flat::CreateColor(builder, color.a, color.r, color.g, color.b);
@@ -66,3 +67,4 @@ void Renderer::Finish() {
 
   flatBufferBuilder.Finish(packet);
 }
+} // namespace rlbotcpp

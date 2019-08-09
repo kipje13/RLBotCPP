@@ -1,6 +1,7 @@
 #include "statesetting.h"
 #include "interface.h"
 
+namespace rlbotcpp {
 flatbuffers::Offset<rlbot::flat::Vector3Partial>
 createVector3Partial(flatbuffers::FlatBufferBuilder &builder,
                      std::optional<DesiredVector3> vector3) {
@@ -90,3 +91,4 @@ GameState::BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder) {
   return rlbot::flat::CreateDesiredGameState(builder, ballStateOffset,
                                              carsOffset, 0, 0);
 }
+} // namespace rlbotcpp

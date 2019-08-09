@@ -4,6 +4,7 @@
 
 #include <string>
 
+namespace rlbotcpp {
 class ScopedRenderer : public NamedRenderer {
 public:
   ScopedRenderer(std::string name);
@@ -12,3 +13,4 @@ public:
   ScopedRenderer &operator=(const ScopedRenderer &) = delete;
   ScopedRenderer(const ScopedRenderer &) = delete;
 };
+} // namespace rlbotcpp

@@ -14,8 +14,9 @@
 #endif
 #endif
 
+namespace rlbotcpp {
 struct ByteBuffer {
-  void* ptr;
+  void *ptr;
   int32_t size;
 };
 
@@ -32,10 +33,10 @@ struct Controller {
 };
 
 class Interface {
- public:
+public:
   static void LoadInterface(std::string dll);
   static bool IsInitialized();
-  static void Free(void* ptr);
+  static void Free(void *ptr);
 
   static ByteBuffer UpdateLiveDataPacketFlatbuffer();
   static ByteBuffer UpdateFieldInfoFlatbuffer();
@@ -43,9 +44,11 @@ class Interface {
   static ByteBuffer GetMatchSettings();
 
   static int SetBotInput(Controller input, int index);
-  static int RenderGroup(void* data, flatbuffers::uoffset_t size);
+  static int RenderGroup(void *data, flatbuffers::uoffset_t size);
   static int SendQuickChat(rlbot::flat::QuickChatSelection message,
                            int botIndex, bool teamOnly);
   static int SetGameState(GameState state);
   static int StartMatch(MatchSettings settings);
 };
+
+} // namespace rlbotcpp

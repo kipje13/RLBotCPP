@@ -11,7 +11,8 @@
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
-namespace Sockets {
+namespace rlbotcpp {
+namespace sockets {
 void Initialize() {
   WORD wVersionRequested = MAKEWORD(2, 2);
   WSADATA wsaData;
@@ -107,4 +108,5 @@ std::string SocketRecieveString(Socket socket) {
 }
 
 void SocketClose(Socket socket) { closesocket(socket.internal_socket); }
-} // namespace Sockets
+} // namespace sockets
+} // namespace rlbotcpp

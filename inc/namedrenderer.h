@@ -4,8 +4,10 @@
 
 #include <string>
 
+namespace rlbotcpp {
 class NamedRenderer : public Renderer {
- public:
+public:
   NamedRenderer(std::string name);
   void FinishAndSend();
 };
+} // namespace rlbotcpp

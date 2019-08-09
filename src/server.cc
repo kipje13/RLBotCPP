@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+namespace rlbotcpp {
 std::vector<std::string> split(std::string string, char seperator) {
   size_t pos = 0;
   std::vector<std::string> substrings;
@@ -34,14 +35,14 @@ bool Server::isInitialized = false;
 
 void Server::Run(uint16_t port, std::function<void(Message)> callback) {
   if (!isInitialized)
-    Sockets::Initialize();
+    sockets::Initialize();
 
-  Sockets::ListenSocket server = Sockets::ListenSocketCreate(port);
-  Sockets::ListenSocketStart(server);
+  sockets::ListenSocket server = sockets::ListenSocketCreate(port);
+  sockets::ListenSocketStart(server);
 
   while (true) {
-    Sockets::Socket client = Sockets::ListenSocketAccept(server);
-    std::string message = Sockets::SocketRecieveString(client);
+    sockets::Socket client = sockets::ListenSocketAccept(server);
+    std::string message = sockets::SocketRecieveString(client);
 
     std::vector<std::string> params = split(message, '\n');
 
@@ -83,3 +84,4 @@ void Server::Run(uint16_t port, std::function<void(Message)> callback) {
     callback(m);
   }
 }
+} // namespace rlbotcpp

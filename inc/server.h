@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <functional>
 
+namespace rlbotcpp {
 enum Command { Add, Remove };
 
 struct Message {
@@ -20,3 +21,4 @@ private:
 public:
   static void Run(uint16_t port, std::function<void(Message)> callback);
 };
+} // namespace rlbotcpp
