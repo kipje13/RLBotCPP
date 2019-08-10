@@ -8,7 +8,7 @@
 #include <direct.h>
 #include <windows.h>
 
-namespace rlbotcpp {
+namespace rlbot {
 namespace platform {
 ModuleHandle LoadDll(const char *filename) {
   ModuleHandle handle;
@@ -36,5 +36,5 @@ void SleepMilliseconds(uint32_t ms) {
   std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 } // namespace platform
-} // namespace rlbotcpp
+} // namespace rlbot
 #endif

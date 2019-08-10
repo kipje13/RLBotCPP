@@ -6,7 +6,7 @@
 #include <array>
 #include <optional>
 
-namespace rlbotcpp {
+namespace rlbot {
 struct DesiredVector3 {
   float x, y, z;
 };
@@ -57,4 +57,4 @@ public:
   flatbuffers::Offset<rlbot::flat::DesiredGameState>
   BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
-} // namespace rlbotcpp
+} // namespace rlbot

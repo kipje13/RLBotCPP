@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace rlbotcpp {
+namespace rlbot {
 class Bot {
 public:
   int index;
@@ -19,4 +19,4 @@ public:
 
   void SendQuickChat(rlbot::flat::QuickChatSelection message, bool teamOnly);
 };
-} // namespace rlbotcpp
+} // namespace rlbot

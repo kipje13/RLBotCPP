@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace rlbotcpp {
+namespace rlbot {
 std::vector<std::string> split(std::string string, char seperator) {
   size_t pos = 0;
   std::vector<std::string> substrings;
@@ -84,4 +84,4 @@ void Server::Run(uint16_t port, std::function<void(Message)> callback) {
     callback(m);
   }
 }
-} // namespace rlbotcpp
+} // namespace rlbot

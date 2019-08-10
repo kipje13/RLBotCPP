@@ -1,6 +1,6 @@
 #pragma once
 
-namespace rlbotcpp {
+namespace rlbot {
 enum RLBotCoreStatus {
   Success,
   BufferOverfilled,

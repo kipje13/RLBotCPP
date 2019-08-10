@@ -15,7 +15,7 @@
 #include <thread>
 #include <vector>
 
-namespace rlbotcpp {
+namespace rlbot {
 struct BotInstance {
   Bot *bot;
   std::thread thread;
@@ -128,4 +128,4 @@ public:
     return new T(index, team, name);
   }
 };
-} // namespace rlbotcpp
+} // namespace rlbot

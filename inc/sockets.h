@@ -8,7 +8,7 @@
 typedef SOCKET socket_t;
 #endif
 
-namespace rlbotcpp {
+namespace rlbot {
 namespace sockets {
 
 struct ListenSocket {
@@ -29,4 +29,4 @@ Socket ListenSocketAccept(ListenSocket listenSocket);
 std::string SocketRecieveString(Socket socket);
 void SocketClose(Socket socket);
 } // namespace sockets
-} // namespace rlbotcpp
+} // namespace rlbot

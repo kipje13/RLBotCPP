@@ -5,7 +5,7 @@
 #include "flatbuffers/flatbuffers.h"
 #include "rlbot_generated.h"
 
-namespace rlbotcpp {
+namespace rlbot {
 typedef bool (*BoolFunc)(void);
 typedef ByteBuffer (*ByteBufferFunc)(void);
 typedef void (*VoidFunc)(void *);
@@ -118,4 +118,4 @@ int Interface::StartMatch(MatchSettings settings) {
 
   return _startMatchFlatbuffer(builder.GetBufferPointer(), builder.GetSize());
 }
-} // namespace rlbotcpp
+} // namespace rlbot

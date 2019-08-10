@@ -3,7 +3,7 @@
 #include "flatbuffers/flatbuffers.h"
 #include "rlbot_generated.h"
 
-namespace rlbotcpp {
+namespace rlbot {
 flatbuffers::Offset<rlbot::flat::MutatorSettings>
 MutatorSettings::BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder) {
   auto mutatorOffset = rlbot::flat::CreateMutatorSettings(
@@ -80,4 +80,4 @@ MatchSettings::BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder) {
 
   return matchSettingsOffset;
 }
-} // namespace rlbotcpp
+} // namespace rlbot

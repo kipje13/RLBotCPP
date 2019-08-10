@@ -5,7 +5,7 @@
 #include <string>
 #include <thread>
 
-namespace rlbotcpp {
+namespace rlbot {
 namespace platform {
 #ifdef _WIN32
 #include "windows.h"
@@ -24,4 +24,4 @@ std::string GetExecutableDirectory();
 
 void SleepMilliseconds(uint32_t ms);
 } // namespace platform
-} // namespace rlbotcpp
+} // namespace rlbot

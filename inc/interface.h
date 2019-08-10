@@ -14,7 +14,7 @@
 #endif
 #endif
 
-namespace rlbotcpp {
+namespace rlbot {
 struct ByteBuffer {
   void *ptr;
   int32_t size;
@@ -50,4 +50,4 @@ public:
   static int SetGameState(GameState state);
   static int StartMatch(MatchSettings settings);
 };
-} // namespace rlbotcpp
+} // namespace rlbot

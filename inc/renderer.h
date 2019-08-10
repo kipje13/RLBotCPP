@@ -1,19 +1,13 @@
 #pragma once
 
+#include "color.h"
+
 #include "flatbuffers/flatbuffers.h"
 #include "rlbot_generated.h"
 
-#include <cstdint>
 #include <vector>
 
-namespace rlbotcpp {
-struct Color {
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
-  uint8_t a;
-};
-
+namespace rlbot {
 class Renderer {
 private:
   int _index;
@@ -35,4 +29,4 @@ protected:
   flatbuffers::FlatBufferBuilder flatBufferBuilder;
   void Finish();
 };
-} // namespace rlbotcpp
+} // namespace rlbot

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace rlbotcpp {
+namespace rlbot {
 class MutatorSettings {
 public:
   rlbot::flat::MatchLength matchLength = rlbot::flat::MatchLength_Five_Minutes;
@@ -90,4 +90,4 @@ public:
   flatbuffers::Offset<rlbot::flat::MatchSettings>
   BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);
 };
-} // namespace rlbotcpp
+} // namespace rlbot

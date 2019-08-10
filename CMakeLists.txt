@@ -3,6 +3,7 @@ project(RLBotCPP LANGUAGES CXX)
 
 set(source_files
   ${PROJECT_SOURCE_DIR}/src/bot.cc
+  ${PROJECT_SOURCE_DIR}/src/color.cc
   ${PROJECT_SOURCE_DIR}/src/interface.cc
   ${PROJECT_SOURCE_DIR}/src/matchsettings.cc
   ${PROJECT_SOURCE_DIR}/src/namedrenderer.cc
@@ -18,6 +19,7 @@ set(header_files
   ${PROJECT_SOURCE_DIR}/inc/rlbot_generated.h
   ${PROJECT_SOURCE_DIR}/inc/bot.h
   ${PROJECT_SOURCE_DIR}/inc/botmanager.h
+  ${PROJECT_SOURCE_DIR}/inc/color.h
   ${PROJECT_SOURCE_DIR}/inc/errorcodes.h
   ${PROJECT_SOURCE_DIR}/inc/interface.h
   ${PROJECT_SOURCE_DIR}/inc/matchsettings.h
