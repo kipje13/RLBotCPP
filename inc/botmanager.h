@@ -63,10 +63,10 @@ public:
 
           lasttime = gametickpacket->gameInfo()->secondsElapsed();
         } else {
-          Platform::SleepMilliseconds(1);
+          platform::SleepMilliseconds(1);
         }
       } else {
-        Platform::SleepMilliseconds(100);
+        platform::SleepMilliseconds(100);
       }
 
       Interface::Free(flatbufferData.ptr);
