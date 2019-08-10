@@ -22,8 +22,6 @@ void FreeDll(ModuleHandle handle);
 void SetWorkingDirectory(std::string directory);
 std::string GetExecutableDirectory();
 
-void Sleep(uint32_t ms) {
-  std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-}
+void SleepMilliseconds(uint32_t ms);
 } // namespace platform
 } // namespace rlbotcpp

@@ -41,7 +41,7 @@ public:
 class CarState {
 public:
   PhysicsState physicsState;
-  std::optional<int> boostAmount;
+  std::optional<float> boostAmount;
 
   flatbuffers::Offset<rlbot::flat::DesiredCarState>
   BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder);

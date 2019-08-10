@@ -5,7 +5,7 @@
 
 namespace rlbotcpp {
 NamedRenderer::NamedRenderer(std::string name)
-    : Renderer(std::hash<std::string>()(name)) {}
+    : Renderer((int)std::hash<std::string>()(name)) {}
 
 void NamedRenderer::FinishAndSend() {
   Finish();

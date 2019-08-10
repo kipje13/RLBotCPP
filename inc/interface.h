@@ -50,5 +50,4 @@ public:
   static int SetGameState(GameState state);
   static int StartMatch(MatchSettings settings);
 };
-
 } // namespace rlbotcpp

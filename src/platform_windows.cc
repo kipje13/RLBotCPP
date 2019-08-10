@@ -31,6 +31,10 @@ std::string GetExecutableDirectory() {
   std::filesystem::path path = std::filesystem::path(filename);
   return path.parent_path().generic_string();
 }
+
+void SleepMilliseconds(uint32_t ms) {
+  std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
 } // namespace platform
 } // namespace rlbotcpp
 #endif

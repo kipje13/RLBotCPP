@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -62,10 +63,10 @@ public:
 
           lasttime = gametickpacket->gameInfo()->secondsElapsed();
         } else {
-          Platform::Sleep(1);
+          Platform::SleepMilliseconds(1);
         }
       } else {
-        Platform::Sleep(100);
+        Platform::SleepMilliseconds(100);
       }
 
       Interface::Free(flatbufferData.ptr);
@@ -79,6 +80,7 @@ public:
   void StartBotServer(uint16_t port) {
     using namespace std::placeholders;
 
+	std::cout << "Started listening on port: " << port << std::endl;
     std::thread tcpserver(Server::Run, port,
                           std::bind(&BotManager::RecieveMessage, this, _1));
     tcpserver.join();
@@ -101,6 +103,9 @@ public:
       instance->thread = std::thread(BotManager::BotThread, instance->bot);
 
       bots.insert(std::make_pair(index, instance));
+
+      std::cout << "Spawning bot \"" << name << "\" with index " << index
+                << std::endl;
     }
 
     bots_mutex.unlock();
@@ -115,6 +120,8 @@ public:
     bots.erase(index);
 
     bots_mutex.unlock();
+
+    std::cout << "Removed bot with index " << index << std::endl;
   }
 
   Bot *InstantiateBot(int index, int team, std::string name) {
