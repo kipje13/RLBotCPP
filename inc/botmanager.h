@@ -27,6 +27,10 @@ private:
   std::mutex bots_mutex;
 
 public:
+  BotManager(BotManager const &) = delete;
+  BotManager &operator=(BotManager const &) = delete;
+  BotManager(){};
+
   static void BotThread(Bot *bot) {
     float lasttime = 0;
 
@@ -80,7 +84,7 @@ public:
   void StartBotServer(uint16_t port) {
     using namespace std::placeholders;
 
-	std::cout << "Started listening on port: " << port << std::endl;
+    std::cout << "Started listening on port: " << port << std::endl;
     std::thread tcpserver(Server::Run, port,
                           std::bind(&BotManager::RecieveMessage, this, _1));
     tcpserver.join();
