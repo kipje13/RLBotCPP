@@ -1,6 +1,7 @@
 #pragma once
 #include "rlbot_generated.h"
 
+#include "controller.h"
 #include "matchsettings.h"
 #include "statesetting.h"
 
@@ -18,18 +19,6 @@ namespace rlbot {
 struct ByteBuffer {
   void *ptr;
   int32_t size;
-};
-
-struct Controller {
-  float throttle;
-  float steer;
-  float pitch;
-  float yaw;
-  float roll;
-  bool jump;
-  bool boost;
-  bool handbrake;
-  bool useItem;
 };
 
 class Interface {

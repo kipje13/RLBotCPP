@@ -20,6 +20,7 @@ set(header_files
   ${PROJECT_SOURCE_DIR}/inc/bot.h
   ${PROJECT_SOURCE_DIR}/inc/botmanager.h
   ${PROJECT_SOURCE_DIR}/inc/color.h
+  ${PROJECT_SOURCE_DIR}/inc/controller.h
   ${PROJECT_SOURCE_DIR}/inc/errorcodes.h
   ${PROJECT_SOURCE_DIR}/inc/interface.h
   ${PROJECT_SOURCE_DIR}/inc/matchsettings.h
