@@ -2,9 +2,9 @@
 
 #include "platform.h"
 
-#include <filesystem>
 #include <string>
 
+#include <libgen.h>
 #include <unistd.h>
 
 namespace rlbot {
@@ -27,8 +27,8 @@ std::string GetExecutableDirectory() {
   char filename[1024];
   readlink("/proc/self/exe", filename, sizeof(filename));
 
-  std::filesystem::path path = std::filesystem::path(filename);
-  return path.parent_path().generic_string();
+  char *dir = dirname(filename);
+  return std::string(dir);
 }
 
 void SleepMilliseconds(uint32_t ms) {
