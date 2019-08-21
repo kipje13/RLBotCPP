@@ -38,3 +38,8 @@ set(header_files
 add_library(RLBotCPP STATIC ${source_files} ${header_files})
 target_include_directories(RLBotCPP PRIVATE inc lib/inc)
 target_compile_features(RLBotCPP PRIVATE cxx_std_17)
+
+#link linux libraries
+if (UNIX)
+    target_link_libraries(RLBotCPP ${CMAKE_DL_LIBS})
+endif (UNIX)
