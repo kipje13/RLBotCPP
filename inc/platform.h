@@ -8,10 +8,18 @@
 namespace rlbot {
 namespace platform {
 #ifdef _WIN32
-#include "windows.h"
+#include <windows.h>
 
 struct ModuleHandle {
   HMODULE platform_specific;
+};
+#endif
+
+#ifdef __linux__
+#include <dlfcn.h>
+
+struct ModuleHandle {
+  void *platform_specific;
 };
 #endif
 

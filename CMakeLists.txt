@@ -7,6 +7,7 @@ set(source_files
   ${PROJECT_SOURCE_DIR}/src/interface.cc
   ${PROJECT_SOURCE_DIR}/src/matchsettings.cc
   ${PROJECT_SOURCE_DIR}/src/namedrenderer.cc
+  ${PROJECT_SOURCE_DIR}/src/platform_linux.cc
   ${PROJECT_SOURCE_DIR}/src/platform_windows.cc
   ${PROJECT_SOURCE_DIR}/src/renderer.cc
   ${PROJECT_SOURCE_DIR}/src/scopedrenderer.cc
