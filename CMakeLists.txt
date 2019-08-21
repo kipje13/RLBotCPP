@@ -12,7 +12,8 @@ set(source_files
   ${PROJECT_SOURCE_DIR}/src/renderer.cc
   ${PROJECT_SOURCE_DIR}/src/scopedrenderer.cc
   ${PROJECT_SOURCE_DIR}/src/server.cc
-  ${PROJECT_SOURCE_DIR}/src/sockets.cc
+  ${PROJECT_SOURCE_DIR}/src/sockets_linux.cc
+  ${PROJECT_SOURCE_DIR}/src/sockets_windows.cc
   ${PROJECT_SOURCE_DIR}/src/statesetting.cc
 )
 
