@@ -22,9 +22,13 @@ struct ByteBuffer {
 };
 
 class Interface {
+private:
+  static bool isLoaded;
+
 public:
   static void LoadInterface(std::string dll);
   static bool IsInitialized();
+  static bool IsInterfaceLoaded();
   static void Free(void *ptr);
 
   static ByteBuffer UpdateLiveDataPacketFlatbuffer();

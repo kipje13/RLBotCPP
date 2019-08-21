@@ -27,6 +27,8 @@ SendPacketFunc _sendQuickChat;
 SendPacketFunc _setGameState;
 SendPacketFunc _startMatchFlatbuffer;
 
+bool Interface::isLoaded = false;
+
 void Interface::LoadInterface(std::string dll) {
   platform::ModuleHandle handle = platform::LoadDll(dll.c_str());
 
@@ -56,9 +58,13 @@ void Interface::LoadInterface(std::string dll) {
       (SendPacketFunc)platform::GetFunctionAddress(handle, "SetGameState");
   _startMatchFlatbuffer = (SendPacketFunc)platform::GetFunctionAddress(
       handle, "StartMatchFlatbuffer");
+
+  isLoaded = true;
 }
 
 bool Interface::IsInitialized() { return _isInitialized(); }
+
+bool Interface::IsInterfaceLoaded() { return isLoaded; }
 
 void Interface::Free(void *ptr) { _free(ptr); }
 

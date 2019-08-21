@@ -34,6 +34,11 @@ public:
   static void BotThread(Bot *bot) {
     float lasttime = 0;
 
+	// Don't start before the interface is ready.
+    while (!Interface::IsInitialized()) {
+      platform::SleepMilliseconds(1);
+    }
+
     while (true) {
       ByteBuffer flatbufferData = Interface::UpdateLiveDataPacketFlatbuffer();
 
@@ -92,6 +97,9 @@ public:
 
   void RecieveMessage(Message message) {
     if (message.command == Command::Add) {
+      if (!Interface::IsInterfaceLoaded()) {
+        Interface::LoadInterface(message.dll_dir + "\\" + DLLNAME);
+      }
       AddBot(message.index, message.team, message.name);
     } else if (message.command == Command::Remove) {
       RemoveBot(message.index);
