@@ -60,7 +60,7 @@ void Renderer::Finish() {
   auto messageoffsets = flatBufferBuilder.CreateVector(renderMessages);
 
   auto groupbuilder = rlbot::flat::RenderGroupBuilder(flatBufferBuilder);
-  groupbuilder.add_id(0);
+  groupbuilder.add_id(_index);
   groupbuilder.add_renderMessages(messageoffsets);
 
   auto packet = groupbuilder.Finish();
