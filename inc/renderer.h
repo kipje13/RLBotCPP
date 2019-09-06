@@ -22,6 +22,10 @@ public:
                     rlbot::flat::Vector3 upperLeft, int scaleX, int scaleY);
   void DrawString3D(std::string text, Color color,
                     rlbot::flat::Vector3 upperLeft, int scaleX, int scaleY);
+  void DrawRect2D(Color color, rlbot::flat::Vector3 upperLeft,
+                  int width, int height, bool filled);
+  void DrawRect3D(Color color, rlbot::flat::Vector3 upperLeft,
+                  int width, int height, bool filled, bool centered = false);
   void Clear();
 
 protected:
