@@ -16,13 +16,7 @@
 #endif
 
 #ifdef __linux__
-#ifdef __x86_64__
-// Just guessing stuff
-#define DLLNAME "RLBot_Core_Interface.so" 
-#else
-// Just guessing stuff
-#define DLLNAME "RLBot_Core_Interface_32.so"
-#endif
+#define DLLNAME "libRLBotInterface.so" 
 #endif
 
 namespace rlbot {

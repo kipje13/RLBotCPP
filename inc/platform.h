@@ -13,6 +13,8 @@ namespace platform {
 struct ModuleHandle {
   HMODULE platform_specific;
 };
+
+const char fileSeperator = '\\';
 #endif
 
 #ifdef __linux__
@@ -21,6 +23,8 @@ struct ModuleHandle {
 struct ModuleHandle {
   void *platform_specific;
 };
+
+const char fileSeperator = '/';
 #endif
 
 ModuleHandle LoadDll(const char *filename);

@@ -11,7 +11,7 @@ namespace rlbot {
 namespace platform {
 ModuleHandle LoadDll(const char *filename) {
   ModuleHandle handle;
-  handle.platform_specific = dlopen(filename, RTLD_LAZY);
+  handle.platform_specific = dlopen(filename, RTLD_NOW);
   return handle;
 }
 
