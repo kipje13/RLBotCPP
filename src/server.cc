@@ -52,14 +52,14 @@ void Server::Run(uint16_t port, std::function<void(Message)> callback) {
       m.command = Command::Add;
 
       if (isNumber(params[2])) {
-        m.index = std::stoi(params[2]);
+        m.team = std::stoi(params[2]);
       } else {
         std::cerr << "Invalid tcp message!" << std::endl;
         continue;
       }
 
       if (isNumber(params[3])) {
-        m.team = std::stoi(params[3]);
+        m.index = std::stoi(params[3]);
       } else {
         std::cerr << "Invalid tcp message!" << std::endl;
         continue;
