@@ -8,11 +8,23 @@
 namespace rlbot {
 namespace platform {
 #ifdef _WIN32
-#include "windows.h"
+#include <windows.h>
 
 struct ModuleHandle {
   HMODULE platform_specific;
 };
+
+const char fileSeperator = '\\';
+#endif
+
+#ifdef __linux__
+#include <dlfcn.h>
+
+struct ModuleHandle {
+  void *platform_specific;
+};
+
+const char fileSeperator = '/';
 #endif
 
 ModuleHandle LoadDll(const char *filename);

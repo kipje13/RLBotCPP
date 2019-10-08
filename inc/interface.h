@@ -15,6 +15,10 @@
 #endif
 #endif
 
+#ifdef __linux__
+#define DLLNAME "libRLBotInterface.so" 
+#endif
+
 namespace rlbot {
 struct ByteBuffer {
   void *ptr;

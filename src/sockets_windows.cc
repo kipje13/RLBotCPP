@@ -1,15 +1,14 @@
 #include "sockets.h"
 
+#ifdef _WIN32
 #include "stdio.h"
 
-#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
 #pragma comment(lib, "Ws2_32.lib")
-#endif
 
 namespace rlbot {
 namespace sockets {
@@ -110,3 +109,4 @@ std::string SocketRecieveString(Socket socket) {
 void SocketClose(Socket socket) { closesocket(socket.internal_socket); }
 } // namespace sockets
 } // namespace rlbot
+#endif

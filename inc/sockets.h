@@ -8,6 +8,10 @@
 typedef SOCKET socket_t;
 #endif
 
+#ifdef __linux__
+typedef int socket_t;
+#endif
+
 namespace rlbot {
 namespace sockets {
 

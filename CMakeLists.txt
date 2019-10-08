@@ -8,11 +8,13 @@ set(source_files
   ${PROJECT_SOURCE_DIR}/src/interface.cc
   ${PROJECT_SOURCE_DIR}/src/matchsettings.cc
   ${PROJECT_SOURCE_DIR}/src/namedrenderer.cc
+  ${PROJECT_SOURCE_DIR}/src/platform_linux.cc
   ${PROJECT_SOURCE_DIR}/src/platform_windows.cc
   ${PROJECT_SOURCE_DIR}/src/renderer.cc
   ${PROJECT_SOURCE_DIR}/src/scopedrenderer.cc
   ${PROJECT_SOURCE_DIR}/src/server.cc
-  ${PROJECT_SOURCE_DIR}/src/sockets.cc
+  ${PROJECT_SOURCE_DIR}/src/sockets_linux.cc
+  ${PROJECT_SOURCE_DIR}/src/sockets_windows.cc
   ${PROJECT_SOURCE_DIR}/src/statesetting.cc
 )
 
@@ -38,3 +40,8 @@ set(header_files
 add_library(RLBotCPP STATIC ${source_files} ${header_files})
 target_include_directories(RLBotCPP PRIVATE inc lib/inc)
 target_compile_features(RLBotCPP PRIVATE cxx_std_17)
+
+#link linux libraries
+if (UNIX)
+    target_link_libraries(RLBotCPP ${CMAKE_DL_LIBS})
+endif (UNIX)

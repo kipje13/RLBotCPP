@@ -43,7 +43,7 @@ public:
   void RecieveMessage(Message message) {
     if (message.command == Command::Add) {
       if (!Interface::IsInterfaceLoaded()) {
-        Interface::LoadInterface(message.dll_dir + "\\" + DLLNAME);
+        Interface::LoadInterface(message.dll_dir + platform::fileSeperator + DLLNAME);
       }
       AddBot(message.index, message.team, message.name);
     } else if (message.command == Command::Remove) {
