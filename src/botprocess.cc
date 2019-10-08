@@ -2,7 +2,14 @@
 
 #include "platform.h"
 
+#include "flatbuffercontainer.h"
+
+
+
 namespace rlbot {
+	
+	//typedef FlatbufferContainer<rlbot::flat::MatchSettings> MatchSettings;
+
 void BotProcess::Start() {
   running = true;
   thread = std::thread(&BotProcess::BotThread, this);
@@ -26,8 +33,7 @@ void BotProcess::BotThread() {
 
     // Don't try to read the packets when they are very small.
     if (flatbufferData.size > 4) {
-      const rlbot::flat::GameTickPacket *gametickpacket =
-          flatbuffers::GetRoot<rlbot::flat::GameTickPacket>(flatbufferData.ptr);
+		GameTickPacket gametickpacket = GameTickPacket(flatbufferData);
 
       // Only run the bot when we recieve a new packet.
       if (lasttime != gametickpacket->gameInfo()->secondsElapsed()) {
@@ -37,14 +43,8 @@ void BotProcess::BotThread() {
         // The fieldinfo or ball prediction might not have been set up by the
         // framework yet.
         if (fieldInfoData.size > 4 && ballPredictionData.size > 4) {
-          const rlbot::flat::FieldInfo *fieldinfo =
-              flatbuffers::GetRoot<rlbot::flat::FieldInfo>(fieldInfoData.ptr);
-          const rlbot::flat::BallPrediction *ballprediction =
-              flatbuffers::GetRoot<rlbot::flat::BallPrediction>(
-                  ballPredictionData.ptr);
-
           int status = Interface::SetBotInput(
-              bot->GetOutput(gametickpacket, fieldinfo, ballprediction),
+              bot->GetOutput(gametickpacket),
               bot->index);
 
           Interface::Free(fieldInfoData.ptr);
@@ -59,7 +59,7 @@ void BotProcess::BotThread() {
       platform::SleepMilliseconds(100);
     }
 
-    Interface::Free(flatbufferData.ptr);
+	Interface::Free(flatbufferData.ptr);
   }
 }
 } // namespace rlbot
