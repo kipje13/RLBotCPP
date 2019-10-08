@@ -1,15 +1,9 @@
 #include "botprocess.h"
 
+#include "packets.h"
 #include "platform.h"
 
-#include "flatbuffercontainer.h"
-
-
-
 namespace rlbot {
-	
-	//typedef FlatbufferContainer<rlbot::flat::MatchSettings> MatchSettings;
-
 void BotProcess::Start() {
   running = true;
   thread = std::thread(&BotProcess::BotThread, this);

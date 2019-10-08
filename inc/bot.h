@@ -1,5 +1,5 @@
 #pragma once
-#include "flatbuffercontainer.h"
+#include "packets.h"
 #include "interface.h"
 #include "rlbot_generated.h"
 
