@@ -12,10 +12,25 @@ Bot::Bot(int _index, int _team, std::string _name) {
   name = _name;
 }
 
-Controller Bot::GetOutput(const rlbot::flat::GameTickPacket *gameTickPacket,
-                          const rlbot::flat::FieldInfo *fieldInfo,
-                          const rlbot::flat::BallPrediction *ballPrediction) {
-  return Controller{0};
+BallPrediction Bot::GetBallPrediction() {
+  ByteBuffer buffer = Interface::GetBallPrediction();
+  BallPrediction ballprediction(buffer);
+  Interface::Free(buffer.ptr);
+  return ballprediction;
+}
+
+FieldInfo Bot::GetFieldInfo() {
+  ByteBuffer buffer = Interface::UpdateFieldInfoFlatbuffer();
+  FieldInfo fieldinfo(buffer);
+  Interface::Free(buffer.ptr);
+  return fieldinfo;
+}
+
+MatchInfo Bot::GetMatchInfo() {
+  ByteBuffer buffer = Interface::GetMatchSettings();
+  MatchInfo matchinfo(buffer);
+  Interface::Free(buffer.ptr);
+  return matchinfo;
 }
 
 void Bot::SendQuickChat(rlbot::flat::QuickChatSelection message,
