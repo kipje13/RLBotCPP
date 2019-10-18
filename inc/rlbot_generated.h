@@ -79,6 +79,8 @@ struct DesiredBoostState;
 
 struct DesiredGameInfoState;
 
+struct ConsoleCommand;
+
 struct DesiredGameState;
 
 struct Color;
@@ -2066,7 +2068,8 @@ struct PlayerInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_NAME = 20,
     VT_TEAM = 22,
     VT_BOOST = 24,
-    VT_HITBOX = 26
+    VT_HITBOX = 26,
+    VT_HITBOXOFFSET = 28
   };
   const Physics *physics() const {
     return GetPointer<const Physics *>(VT_PHYSICS);
@@ -2108,6 +2111,9 @@ struct PlayerInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const BoxShape *hitbox() const {
     return GetPointer<const BoxShape *>(VT_HITBOX);
   }
+  const Vector3 *hitboxOffset() const {
+    return GetStruct<const Vector3 *>(VT_HITBOXOFFSET);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PHYSICS) &&
@@ -2126,6 +2132,7 @@ struct PlayerInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<int32_t>(verifier, VT_BOOST) &&
            VerifyOffset(verifier, VT_HITBOX) &&
            verifier.VerifyTable(hitbox()) &&
+           VerifyField<Vector3>(verifier, VT_HITBOXOFFSET) &&
            verifier.EndTable();
   }
 };
@@ -2169,6 +2176,9 @@ struct PlayerInfoBuilder {
   void add_hitbox(flatbuffers::Offset<BoxShape> hitbox) {
     fbb_.AddOffset(PlayerInfo::VT_HITBOX, hitbox);
   }
+  void add_hitboxOffset(const Vector3 *hitboxOffset) {
+    fbb_.AddStruct(PlayerInfo::VT_HITBOXOFFSET, hitboxOffset);
+  }
   explicit PlayerInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -2194,8 +2204,10 @@ inline flatbuffers::Offset<PlayerInfo> CreatePlayerInfo(
     flatbuffers::Offset<flatbuffers::String> name = 0,
     int32_t team = 0,
     int32_t boost = 0,
-    flatbuffers::Offset<BoxShape> hitbox = 0) {
+    flatbuffers::Offset<BoxShape> hitbox = 0,
+    const Vector3 *hitboxOffset = 0) {
   PlayerInfoBuilder builder_(_fbb);
+  builder_.add_hitboxOffset(hitboxOffset);
   builder_.add_hitbox(hitbox);
   builder_.add_boost(boost);
   builder_.add_team(team);
@@ -2224,7 +2236,8 @@ inline flatbuffers::Offset<PlayerInfo> CreatePlayerInfoDirect(
     const char *name = nullptr,
     int32_t team = 0,
     int32_t boost = 0,
-    flatbuffers::Offset<BoxShape> hitbox = 0) {
+    flatbuffers::Offset<BoxShape> hitbox = 0,
+    const Vector3 *hitboxOffset = 0) {
   return rlbot::flat::CreatePlayerInfo(
       _fbb,
       physics,
@@ -2238,7 +2251,8 @@ inline flatbuffers::Offset<PlayerInfo> CreatePlayerInfoDirect(
       name ? _fbb.CreateString(name) : 0,
       team,
       boost,
-      hitbox);
+      hitbox,
+      hitboxOffset);
 }
 
 struct DropShotBallInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -3628,12 +3642,64 @@ inline flatbuffers::Offset<DesiredGameInfoState> CreateDesiredGameInfoState(
   return builder_.Finish();
 }
 
+/// A console command which we will try to execute inside Rocket League.
+/// See https://github.com/RLBot/RLBot/wiki/Console-Commands for a list of known commands.
+struct ConsoleCommand FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_COMMAND = 4
+  };
+  const flatbuffers::String *command() const {
+    return GetPointer<const flatbuffers::String *>(VT_COMMAND);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_COMMAND) &&
+           verifier.Verify(command()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ConsoleCommandBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_command(flatbuffers::Offset<flatbuffers::String> command) {
+    fbb_.AddOffset(ConsoleCommand::VT_COMMAND, command);
+  }
+  explicit ConsoleCommandBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ConsoleCommandBuilder &operator=(const ConsoleCommandBuilder &);
+  flatbuffers::Offset<ConsoleCommand> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<ConsoleCommand>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<ConsoleCommand> CreateConsoleCommand(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> command = 0) {
+  ConsoleCommandBuilder builder_(_fbb);
+  builder_.add_command(command);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<ConsoleCommand> CreateConsoleCommandDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *command = nullptr) {
+  return rlbot::flat::CreateConsoleCommand(
+      _fbb,
+      command ? _fbb.CreateString(command) : 0);
+}
+
 struct DesiredGameState FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_BALLSTATE = 4,
     VT_CARSTATES = 6,
     VT_BOOSTSTATES = 8,
-    VT_GAMEINFOSTATE = 10
+    VT_GAMEINFOSTATE = 10,
+    VT_CONSOLECOMMANDS = 12
   };
   const DesiredBallState *ballState() const {
     return GetPointer<const DesiredBallState *>(VT_BALLSTATE);
@@ -3647,6 +3713,9 @@ struct DesiredGameState FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const DesiredGameInfoState *gameInfoState() const {
     return GetPointer<const DesiredGameInfoState *>(VT_GAMEINFOSTATE);
   }
+  const flatbuffers::Vector<flatbuffers::Offset<ConsoleCommand>> *consoleCommands() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<ConsoleCommand>> *>(VT_CONSOLECOMMANDS);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_BALLSTATE) &&
@@ -3659,6 +3728,9 @@ struct DesiredGameState FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyVectorOfTables(boostStates()) &&
            VerifyOffset(verifier, VT_GAMEINFOSTATE) &&
            verifier.VerifyTable(gameInfoState()) &&
+           VerifyOffset(verifier, VT_CONSOLECOMMANDS) &&
+           verifier.Verify(consoleCommands()) &&
+           verifier.VerifyVectorOfTables(consoleCommands()) &&
            verifier.EndTable();
   }
 };
@@ -3678,6 +3750,9 @@ struct DesiredGameStateBuilder {
   void add_gameInfoState(flatbuffers::Offset<DesiredGameInfoState> gameInfoState) {
     fbb_.AddOffset(DesiredGameState::VT_GAMEINFOSTATE, gameInfoState);
   }
+  void add_consoleCommands(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<ConsoleCommand>>> consoleCommands) {
+    fbb_.AddOffset(DesiredGameState::VT_CONSOLECOMMANDS, consoleCommands);
+  }
   explicit DesiredGameStateBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -3695,8 +3770,10 @@ inline flatbuffers::Offset<DesiredGameState> CreateDesiredGameState(
     flatbuffers::Offset<DesiredBallState> ballState = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<DesiredCarState>>> carStates = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<DesiredBoostState>>> boostStates = 0,
-    flatbuffers::Offset<DesiredGameInfoState> gameInfoState = 0) {
+    flatbuffers::Offset<DesiredGameInfoState> gameInfoState = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<ConsoleCommand>>> consoleCommands = 0) {
   DesiredGameStateBuilder builder_(_fbb);
+  builder_.add_consoleCommands(consoleCommands);
   builder_.add_gameInfoState(gameInfoState);
   builder_.add_boostStates(boostStates);
   builder_.add_carStates(carStates);
@@ -3709,13 +3786,15 @@ inline flatbuffers::Offset<DesiredGameState> CreateDesiredGameStateDirect(
     flatbuffers::Offset<DesiredBallState> ballState = 0,
     const std::vector<flatbuffers::Offset<DesiredCarState>> *carStates = nullptr,
     const std::vector<flatbuffers::Offset<DesiredBoostState>> *boostStates = nullptr,
-    flatbuffers::Offset<DesiredGameInfoState> gameInfoState = 0) {
+    flatbuffers::Offset<DesiredGameInfoState> gameInfoState = 0,
+    const std::vector<flatbuffers::Offset<ConsoleCommand>> *consoleCommands = nullptr) {
   return rlbot::flat::CreateDesiredGameState(
       _fbb,
       ballState,
       carStates ? _fbb.CreateVector<flatbuffers::Offset<DesiredCarState>>(*carStates) : 0,
       boostStates ? _fbb.CreateVector<flatbuffers::Offset<DesiredBoostState>>(*boostStates) : 0,
-      gameInfoState);
+      gameInfoState,
+      consoleCommands ? _fbb.CreateVector<flatbuffers::Offset<ConsoleCommand>>(*consoleCommands) : 0);
 }
 
 struct Color FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -5134,7 +5213,8 @@ struct MatchSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_SKIPREPLAYS = 10,
     VT_INSTANTSTART = 12,
     VT_MUTATORSETTINGS = 14,
-    VT_EXISTINGMATCHBEHAVIOR = 16
+    VT_EXISTINGMATCHBEHAVIOR = 16,
+    VT_ENABLELOCKSTEP = 18
   };
   const flatbuffers::Vector<flatbuffers::Offset<PlayerConfiguration>> *playerConfigurations() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<PlayerConfiguration>> *>(VT_PLAYERCONFIGURATIONS);
@@ -5157,6 +5237,9 @@ struct MatchSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   ExistingMatchBehavior existingMatchBehavior() const {
     return static_cast<ExistingMatchBehavior>(GetField<int8_t>(VT_EXISTINGMATCHBEHAVIOR, 0));
   }
+  bool enableLockstep() const {
+    return GetField<uint8_t>(VT_ENABLELOCKSTEP, 0) != 0;
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PLAYERCONFIGURATIONS) &&
@@ -5169,6 +5252,7 @@ struct MatchSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyOffset(verifier, VT_MUTATORSETTINGS) &&
            verifier.VerifyTable(mutatorSettings()) &&
            VerifyField<int8_t>(verifier, VT_EXISTINGMATCHBEHAVIOR) &&
+           VerifyField<uint8_t>(verifier, VT_ENABLELOCKSTEP) &&
            verifier.EndTable();
   }
 };
@@ -5197,6 +5281,9 @@ struct MatchSettingsBuilder {
   void add_existingMatchBehavior(ExistingMatchBehavior existingMatchBehavior) {
     fbb_.AddElement<int8_t>(MatchSettings::VT_EXISTINGMATCHBEHAVIOR, static_cast<int8_t>(existingMatchBehavior), 0);
   }
+  void add_enableLockstep(bool enableLockstep) {
+    fbb_.AddElement<uint8_t>(MatchSettings::VT_ENABLELOCKSTEP, static_cast<uint8_t>(enableLockstep), 0);
+  }
   explicit MatchSettingsBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -5217,10 +5304,12 @@ inline flatbuffers::Offset<MatchSettings> CreateMatchSettings(
     bool skipReplays = false,
     bool instantStart = false,
     flatbuffers::Offset<MutatorSettings> mutatorSettings = 0,
-    ExistingMatchBehavior existingMatchBehavior = ExistingMatchBehavior_Restart_If_Different) {
+    ExistingMatchBehavior existingMatchBehavior = ExistingMatchBehavior_Restart_If_Different,
+    bool enableLockstep = false) {
   MatchSettingsBuilder builder_(_fbb);
   builder_.add_mutatorSettings(mutatorSettings);
   builder_.add_playerConfigurations(playerConfigurations);
+  builder_.add_enableLockstep(enableLockstep);
   builder_.add_existingMatchBehavior(existingMatchBehavior);
   builder_.add_instantStart(instantStart);
   builder_.add_skipReplays(skipReplays);
@@ -5237,7 +5326,8 @@ inline flatbuffers::Offset<MatchSettings> CreateMatchSettingsDirect(
     bool skipReplays = false,
     bool instantStart = false,
     flatbuffers::Offset<MutatorSettings> mutatorSettings = 0,
-    ExistingMatchBehavior existingMatchBehavior = ExistingMatchBehavior_Restart_If_Different) {
+    ExistingMatchBehavior existingMatchBehavior = ExistingMatchBehavior_Restart_If_Different,
+    bool enableLockstep = false) {
   return rlbot::flat::CreateMatchSettings(
       _fbb,
       playerConfigurations ? _fbb.CreateVector<flatbuffers::Offset<PlayerConfiguration>>(*playerConfigurations) : 0,
@@ -5246,7 +5336,8 @@ inline flatbuffers::Offset<MatchSettings> CreateMatchSettingsDirect(
       skipReplays,
       instantStart,
       mutatorSettings,
-      existingMatchBehavior);
+      existingMatchBehavior,
+      enableLockstep);
 }
 
 struct QuickChatMessages FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {

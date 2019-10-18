@@ -16,7 +16,7 @@
 #endif
 
 #ifdef __linux__
-#define DLLNAME "libRLBotInterface.so" 
+#define DLLNAME "libRLBotInterface.so"
 #endif
 
 namespace rlbot {
@@ -39,6 +39,8 @@ public:
   static ByteBuffer UpdateFieldInfoFlatbuffer();
   static ByteBuffer GetBallPrediction();
   static ByteBuffer GetMatchSettings();
+  static ByteBuffer ReceiveQuickChat(int botIndex, int teamIndex,
+                                     int lastMessageIndex);
 
   static int SetBotInput(Controller input, int index);
   static int RenderGroup(void *data, flatbuffers::uoffset_t size);
