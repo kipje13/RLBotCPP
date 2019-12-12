@@ -14,7 +14,7 @@ void BotProcess::Stop() {
   thread.join();
 }
 
-void BotProcess::BotThread() {
+void BotProcess::BotThread() const {
   float lasttime = 0;
 
   // Don't start before the interface is ready.
@@ -39,7 +39,7 @@ void BotProcess::BotThread() {
         if (fieldInfoData.size > 4 && ballPredictionData.size > 4) {
           int status = Interface::SetBotInput(
               bot->GetOutput(gametickpacket),
-              bot->index);
+              bot->index); /// TODO: Report status to user.
 
           Interface::Free(fieldInfoData.ptr);
           Interface::Free(ballPredictionData.ptr);
