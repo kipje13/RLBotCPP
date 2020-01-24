@@ -8,7 +8,7 @@
 typedef SOCKET socket_t;
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__CYGWIN__)
 typedef int socket_t;
 #endif
 

@@ -1,11 +1,10 @@
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
 
 #include "platform.h"
 
 #include <filesystem>
 #include <string>
 
-#include <direct.h>
 #include <windows.h>
 
 namespace rlbot {
@@ -17,12 +16,12 @@ ModuleHandle LoadDll(const char *filename) {
 }
 
 void *GetFunctionAddress(ModuleHandle handle, const char *procname) {
-  return GetProcAddress(handle.platform_specific, procname);
+  return (void*) GetProcAddress(handle.platform_specific, procname);
 }
 
 void FreeDll(ModuleHandle handle) { FreeLibrary(handle.platform_specific); }
 
-void SetWorkingDirectory(std::string directory) { _chdir(directory.c_str()); }
+void SetWorkingDirectory(std::string directory) {SetCurrentDirectory(directory.c_str()); }
 
 std::string GetExecutableDirectory() {
   char filename[1024];

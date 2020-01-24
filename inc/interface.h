@@ -6,16 +6,18 @@
 #include "statesetting.h"
 
 #include <string>
-
-#ifdef _WIN64
+#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(_WIN64) || defined(__x86_64__)
 #define DLLNAME "RLBot_Core_Interface.dll"
 #else
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__i686__)
 #define DLLNAME "RLBot_Core_Interface_32.dll"
 #endif
 #endif
+#endif
 
-#ifdef __linux__
+
+#if defined(__linux__)
 #define DLLNAME "libRLBotInterface.so" 
 #endif
 

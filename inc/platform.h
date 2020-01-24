@@ -7,7 +7,7 @@
 
 namespace rlbot {
 namespace platform {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
 #include <windows.h>
 
 struct ModuleHandle {
