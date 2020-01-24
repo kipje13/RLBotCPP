@@ -1,6 +1,6 @@
-#ifdef _WIN32
-
 #include "platform.h"
+
+#ifdef OS_WINDOWS
 
 #include <filesystem>
 #include <string>

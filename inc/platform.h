@@ -1,13 +1,14 @@
 #pragma once
 
+#include "rlbot.h"
+
 #include <chrono>
-#include <cstdint>
 #include <string>
 #include <thread>
 
 namespace rlbot {
 namespace platform {
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 #include <windows.h>
 
 struct ModuleHandle {
@@ -17,7 +18,7 @@ struct ModuleHandle {
 const char fileSeperator = '\\';
 #endif
 
-#ifdef __linux__
+#ifdef OS_UNIX
 #include <dlfcn.h>
 
 struct ModuleHandle {

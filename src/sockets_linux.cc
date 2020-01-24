@@ -1,6 +1,6 @@
 #include "sockets.h"
 
-#ifdef __linux__
+#ifdef OS_UNIX
 #include "stdio.h"
 
 #include <iostream>
@@ -27,7 +27,7 @@ ListenSocket ListenSocketCreate(uint16_t port) {
     return ListenSocket{};
   } 
 
-  if (setsockopt(server, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) 
+  if (setsockopt(server, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) 
   { 
     printf("setsockopt failed.\n"); 
     return ListenSocket{};

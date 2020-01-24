@@ -3,19 +3,20 @@
 
 #include "controller.h"
 #include "matchsettings.h"
+#include "rlbot.h"
 #include "statesetting.h"
 
 #include <string>
 
-#ifdef _WIN64
+#if defined(OS_DL_WINDOWS) && defined(OS_64)
 #define DLLNAME "RLBot_Core_Interface.dll"
-#else
-#ifdef _WIN32
-#define DLLNAME "RLBot_Core_Interface_32.dll"
-#endif
 #endif
 
-#ifdef __linux__
+#if defined(OS_DL_WINDOWS) && defined(OS_32)
+#define DLLNAME "RLBot_Core_Interface_32.dll"
+#endif
+
+#ifdef OS_DL_LINUX
 #define DLLNAME "libRLBotInterface.so" 
 #endif
 
