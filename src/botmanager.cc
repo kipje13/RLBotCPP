@@ -10,7 +10,7 @@ void BotManager::StartBotServer(uint16_t port) {
 
   std::cout << "Started listening on port: " << port << std::endl;
   std::thread tcpserver(Server::Run, port,
-                        std::bind(&BotManager::RecieveMessage, this, _1));
+                        std::bind(&BotManager::RecieveMessage, this, _1));                        
   tcpserver.join();
 }
 

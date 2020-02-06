@@ -1,14 +1,16 @@
 #pragma once
 
+#include "rlbot.h"
+
 #include <cstdint>
 #include <string>
 
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 #include <winsock2.h>
 typedef SOCKET socket_t;
 #endif
 
-#ifdef __linux__
+#ifdef OS_UNIX
 typedef int socket_t;
 #endif
 

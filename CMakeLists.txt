@@ -20,6 +20,7 @@ set(source_files
 )
 
 set(header_files
+  ${PROJECT_SOURCE_DIR}/inc/rlbot.h
   ${PROJECT_SOURCE_DIR}/inc/rlbot_generated.h
   ${PROJECT_SOURCE_DIR}/inc/bot.h
   ${PROJECT_SOURCE_DIR}/inc/botmanager.h

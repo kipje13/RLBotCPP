@@ -1,6 +1,6 @@
-#ifdef __linux__
-
 #include "platform.h"
+
+#ifdef OS_UNIX
 
 #include <string>
 
