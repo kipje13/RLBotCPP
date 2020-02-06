@@ -1,12 +1,15 @@
 #pragma once
-#include "packets.h"
 #include "interface.h"
+#include "packets.h"
 #include "rlbot_generated.h"
 
 #include <string>
 
 namespace rlbot {
 class Bot {
+private:
+  int lastMessageIndex = -1;
+
 public:
   int index;
   int team;
@@ -21,5 +24,6 @@ public:
   MatchInfo GetMatchInfo();
 
   void SendQuickChat(rlbot::flat::QuickChatSelection message, bool teamOnly);
+  QuickChatMessages ReceiveQuickChat();
 };
 } // namespace rlbot

@@ -37,4 +37,19 @@ void Bot::SendQuickChat(rlbot::flat::QuickChatSelection message,
                         bool teamOnly) {
   Interface::SendQuickChat(message, index, teamOnly);
 }
+
+QuickChatMessages Bot::ReceiveQuickChat() {
+  ByteBuffer buffer =
+      Interface::ReceiveQuickChat(index, team, lastMessageIndex);
+  QuickChatMessages quickchat = QuickChatMessages(buffer);
+  Interface::Free(buffer.ptr);
+
+  int count = quickchat->messages()->size();
+
+  if (count > 0) {
+    lastMessageIndex = quickchat->messages()->Get(count - 1)->messageIndex();
+  }
+
+  return quickchat;
+}
 } // namespace rlbot

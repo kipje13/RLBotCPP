@@ -80,6 +80,11 @@ ByteBuffer Interface::GetBallPrediction() { return _getBallPrediction(); }
 
 ByteBuffer Interface::GetMatchSettings() { return _getMatchSettings(); }
 
+ByteBuffer Interface::ReceiveQuickChat(int botIndex, int teamIndex,
+                                       int lastMessageIndex) {
+  return _receiveChat(botIndex, teamIndex, lastMessageIndex);
+}
+
 int Interface::SetBotInput(Controller input, int index) {
   flatbuffers::FlatBufferBuilder builder(50);
 
