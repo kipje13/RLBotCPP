@@ -6,11 +6,18 @@
 #include <string>
 #include <thread>
 
-namespace rlbot {
-namespace platform {
 #ifdef OS_WINDOWS
 #include <windows.h>
+#endif
 
+#ifdef OS_UNIX
+#include <dlfcn.h>
+#endif
+
+namespace rlbot {
+namespace platform {
+
+#ifdef OS_WINDOWS
 struct ModuleHandle {
   HMODULE platform_specific;
 };
@@ -19,8 +26,6 @@ const char fileSeperator = '\\';
 #endif
 
 #ifdef OS_UNIX
-#include <dlfcn.h>
-
 struct ModuleHandle {
   void *platform_specific;
 };
