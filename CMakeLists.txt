@@ -42,8 +42,8 @@ set(header_files
 )
 
 add_library(RLBotCPP STATIC ${source_files} ${header_files})
-target_include_directories(RLBotCPP PRIVATE inc lib/inc)
-target_compile_features(RLBotCPP PRIVATE cxx_std_17)
+target_include_directories(RLBotCPP PUBLIC inc lib/inc)
+target_compile_features(RLBotCPP PUBLIC cxx_std_17)
 
 #link linux libraries
 if (UNIX)
