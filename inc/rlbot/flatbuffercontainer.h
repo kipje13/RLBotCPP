@@ -1,6 +1,6 @@
 #pragma once
 
-#include "interface.h"
+#include "rlbot/interface.h"
 
 #include <cstdlib>
 

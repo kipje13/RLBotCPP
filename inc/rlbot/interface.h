@@ -1,10 +1,10 @@
 #pragma once
-#include "rlbot_generated.h"
+#include "rlbot/rlbot_generated.h"
 
-#include "controller.h"
-#include "matchsettings.h"
-#include "rlbot.h"
-#include "statesetting.h"
+#include "rlbot/controller.h"
+#include "rlbot/matchsettings.h"
+#include "rlbot/rlbot.h"
+#include "rlbot/statesetting.h"
 
 #include <string>
 

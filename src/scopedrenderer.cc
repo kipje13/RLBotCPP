@@ -1,4 +1,4 @@
-#include "scopedrenderer.h"
+#include "rlbot/scopedrenderer.h"
 
 namespace rlbot {
 ScopedRenderer::ScopedRenderer(std::string name) : NamedRenderer(name) {}

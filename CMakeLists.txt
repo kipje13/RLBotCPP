@@ -20,25 +20,25 @@ set(source_files
 )
 
 set(header_files
-  ${PROJECT_SOURCE_DIR}/inc/rlbot.h
-  ${PROJECT_SOURCE_DIR}/inc/rlbot_generated.h
-  ${PROJECT_SOURCE_DIR}/inc/bot.h
-  ${PROJECT_SOURCE_DIR}/inc/botmanager.h
-  ${PROJECT_SOURCE_DIR}/inc/botprocess.h
-  ${PROJECT_SOURCE_DIR}/inc/color.h
-  ${PROJECT_SOURCE_DIR}/inc/controller.h
-  ${PROJECT_SOURCE_DIR}/inc/errorcodes.h
-  ${PROJECT_SOURCE_DIR}/inc/flatbuffercontainer.h
-  ${PROJECT_SOURCE_DIR}/inc/interface.h
-  ${PROJECT_SOURCE_DIR}/inc/matchsettings.h
-  ${PROJECT_SOURCE_DIR}/inc/namedrenderer.h
-  ${PROJECT_SOURCE_DIR}/inc/packets.h
-  ${PROJECT_SOURCE_DIR}/inc/platform.h
-  ${PROJECT_SOURCE_DIR}/inc/renderer.h
-  ${PROJECT_SOURCE_DIR}/inc/scopedrenderer.h
-  ${PROJECT_SOURCE_DIR}/inc/server.h
-  ${PROJECT_SOURCE_DIR}/inc/sockets.h
-  ${PROJECT_SOURCE_DIR}/inc/statesetting.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/rlbot.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/rlbot_generated.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/bot.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/botmanager.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/botprocess.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/color.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/controller.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/errorcodes.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/flatbuffercontainer.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/interface.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/matchsettings.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/namedrenderer.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/packets.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/platform.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/renderer.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/scopedrenderer.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/server.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/sockets.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/statesetting.h
 )
 
 add_library(RLBotCPP STATIC ${source_files} ${header_files})

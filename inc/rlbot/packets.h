@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flatbuffercontainer.h"
+#include "rlbot/flatbuffercontainer.h"
 
 namespace rlbot {
 typedef FlatbufferContainer<rlbot::flat::GameTickPacket> GameTickPacket;

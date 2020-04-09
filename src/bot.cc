@@ -1,9 +1,9 @@
-#include "bot.h"
+#include "rlbot/bot.h"
 
 #include <vector>
 
-#include "interface.h"
-#include "rlbot_generated.h"
+#include "rlbot/interface.h"
+#include "rlbot/rlbot_generated.h"
 
 namespace rlbot {
 Bot::Bot(int _index, int _team, std::string _name) {

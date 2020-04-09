@@ -1,7 +1,8 @@
 #pragma once
 
-#include "flatbuffers/flatbuffers.h"
-#include "rlbot_generated.h"
+#include <flatbuffers/flatbuffers.h>
+
+#include "rlbot/rlbot_generated.h"
 
 #include <array>
 #include <optional>
@@ -50,7 +51,7 @@ public:
 class GameState {
 public:
   BallState ballState;
-  std::array<std::optional<CarState>, 8> carStates;
+  std::array<std::optional<CarState>, 10> carStates;
 
   GameState();
 

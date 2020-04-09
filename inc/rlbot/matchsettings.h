@@ -1,7 +1,8 @@
 #pragma once
 
-#include "flatbuffers/flatbuffers.h"
-#include "rlbot_generated.h"
+#include <flatbuffers/flatbuffers.h>
+
+#include "rlbot/rlbot_generated.h"
 
 #include <string>
 #include <vector>

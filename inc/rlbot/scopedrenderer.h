@@ -1,6 +1,6 @@
 #pragma once
 
-#include "namedrenderer.h"
+#include "rlbot/namedrenderer.h"
 
 #include <string>
 

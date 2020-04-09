@@ -1,4 +1,4 @@
-#include "botmanager.h"
+#include "rlbot/botmanager.h"
 
 namespace rlbot {
 BotManager::BotManager(Bot *(*botfactory)(int, int, std::string)) {

@@ -1,5 +1,5 @@
-#include "statesetting.h"
-#include "interface.h"
+#include "rlbot/statesetting.h"
+#include "rlbot/interface.h"
 
 namespace rlbot {
 flatbuffers::Offset<rlbot::flat::Vector3Partial>

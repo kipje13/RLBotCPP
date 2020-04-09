@@ -1,9 +1,9 @@
 #pragma once
 
-#include "color.h"
+#include <flatbuffers/flatbuffers.h>
 
-#include "flatbuffers/flatbuffers.h"
-#include "rlbot_generated.h"
+#include "rlbot/rlbot_generated.h"
+#include "rlbot/color.h"
 
 #include <vector>
 

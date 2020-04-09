@@ -1,6 +1,6 @@
-#include "renderer.h"
+#include "rlbot/renderer.h"
 
-#include "interface.h"
+#include "rlbot/interface.h"
 
 namespace rlbot {
 flatbuffers::Offset<rlbot::flat::Color>

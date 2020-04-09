@@ -1,7 +1,8 @@
-#include "namedrenderer.h"
+#include "rlbot/namedrenderer.h"
 
-#include "flatbuffers/flatbuffers.h"
-#include "interface.h"
+#include <flatbuffers/flatbuffers.h>
+
+#include "rlbot/interface.h"
 
 namespace rlbot {
 NamedRenderer::NamedRenderer(std::string name)

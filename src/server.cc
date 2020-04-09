@@ -1,6 +1,6 @@
-#include "server.h"
+#include "rlbot/server.h"
 
-#include "sockets.h"
+#include "rlbot/sockets.h"
 
 #include <cctype>
 #include <iostream>

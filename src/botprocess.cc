@@ -1,7 +1,7 @@
-#include "botprocess.h"
+#include "rlbot/botprocess.h"
 
-#include "packets.h"
-#include "platform.h"
+#include "rlbot/packets.h"
+#include "rlbot/platform.h"
 
 namespace rlbot {
 void BotProcess::Start() {

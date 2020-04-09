@@ -1,9 +1,9 @@
-#include "interface.h"
+#include "rlbot/interface.h"
 
-#include "platform.h"
+#include <flatbuffers/flatbuffers.h>
 
-#include "flatbuffers/flatbuffers.h"
-#include "rlbot_generated.h"
+#include "rlbot/platform.h"
+#include "rlbot/rlbot_generated.h"
 
 namespace rlbot {
 typedef bool (*BoolFunc)(void);

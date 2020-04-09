@@ -1,10 +1,9 @@
 #pragma once
 
-#include "bot.h"
-#include "botprocess.h"
-
-#include "platform.h"
-#include "server.h"
+#include "rlbot/bot.h"
+#include "rlbot/botprocess.h"
+#include "rlbot/platform.h"
+#include "rlbot/server.h"
 
 #include <cstdint>
 #include <functional>

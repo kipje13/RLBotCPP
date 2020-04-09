@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rlbot.h"
+#include "rlbot/rlbot.h"
 
 #include <cstdint>
 #include <string>

@@ -1,7 +1,8 @@
-#include "matchsettings.h"
+#include "rlbot/matchsettings.h"
 
-#include "flatbuffers/flatbuffers.h"
-#include "rlbot_generated.h"
+#include <flatbuffers/flatbuffers.h>
+
+#include "rlbot/rlbot_generated.h"
 
 namespace rlbot {
 flatbuffers::Offset<rlbot::flat::MutatorSettings>

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "bot.h"
+#include "rlbot/bot.h"
+
 #include <thread>
 
 namespace rlbot {

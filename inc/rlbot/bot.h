@@ -1,7 +1,7 @@
 #pragma once
-#include "interface.h"
-#include "packets.h"
-#include "rlbot_generated.h"
+#include "rlbot/interface.h"
+#include "rlbot/packets.h"
+#include "rlbot/rlbot_generated.h"
 
 #include <string>
 
