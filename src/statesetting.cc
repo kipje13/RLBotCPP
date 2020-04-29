@@ -64,7 +64,7 @@ CarState::BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder) {
   auto carPhysicsOffset = physicsState.BuildFlatBuffer(builder);
 
   auto carStateOffset =
-      rlbot::flat::CreateDesiredCarState(builder, carPhysicsOffset, &boost);
+      rlbot::flat::CreateDesiredCarState(builder, carPhysicsOffset, boostAmount.has_value() ? &boost : nullptr);
 
   return carStateOffset;
 }
@@ -88,7 +88,13 @@ GameState::BuildFlatBuffer(flatbuffers::FlatBufferBuilder &builder) {
 
   auto carsOffset = builder.CreateVector(cars);
 
+  rlbot::flat::Float desiredGravity = gravity.value_or(0);
+  rlbot::flat::Float desiredGameSpeed = gameSpeed.value_or(0);
+  auto gameInfoState = rlbot::flat::CreateDesiredGameInfoState(builder, 
+	  gravity.has_value() ? &desiredGravity : nullptr, 
+	  gameSpeed.has_value() ? &desiredGameSpeed : nullptr);
+
   return rlbot::flat::CreateDesiredGameState(builder, ballStateOffset,
-                                             carsOffset, 0, 0);
+                                             carsOffset, 0, gameInfoState, 0);
 }
 } // namespace rlbot

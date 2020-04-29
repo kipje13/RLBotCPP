@@ -333,12 +333,22 @@ enum QuickChatSelection {
 ,
   QuickChatSelection_Custom_Compliments_GC = 56  /// Are you <Insert Pro>Bot? *
 ,
-  QuickChatSelection_Custom_Compliments_Pro = 57,
+  QuickChatSelection_Custom_Compliments_Pro = 57  /// Lag
+,
+  QuickChatSelection_Custom_Excuses_Lag = 58  /// Ghost inputs
+,
+  QuickChatSelection_Custom_Excuses_GhostInputs = 59  /// RIGGED
+,
+  QuickChatSelection_Custom_Excuses_Rigged = 60  /// Mafia plays!
+,
+  QuickChatSelection_Custom_Toxic_MafiaPlays = 61  /// Yeet!
+,
+  QuickChatSelection_Custom_Exclamation_Yeet = 62,
   QuickChatSelection_MIN = QuickChatSelection_Information_IGotIt,
-  QuickChatSelection_MAX = QuickChatSelection_Custom_Compliments_Pro
+  QuickChatSelection_MAX = QuickChatSelection_Custom_Exclamation_Yeet
 };
 
-inline const QuickChatSelection (&EnumValuesQuickChatSelection())[58] {
+inline const QuickChatSelection (&EnumValuesQuickChatSelection())[63] {
   static const QuickChatSelection values[] = {
     QuickChatSelection_Information_IGotIt,
     QuickChatSelection_Information_NeedBoost,
@@ -397,7 +407,12 @@ inline const QuickChatSelection (&EnumValuesQuickChatSelection())[58] {
     QuickChatSelection_Custom_Compliments_SkillLevel,
     QuickChatSelection_Custom_Compliments_proud,
     QuickChatSelection_Custom_Compliments_GC,
-    QuickChatSelection_Custom_Compliments_Pro
+    QuickChatSelection_Custom_Compliments_Pro,
+    QuickChatSelection_Custom_Excuses_Lag,
+    QuickChatSelection_Custom_Excuses_GhostInputs,
+    QuickChatSelection_Custom_Excuses_Rigged,
+    QuickChatSelection_Custom_Toxic_MafiaPlays,
+    QuickChatSelection_Custom_Exclamation_Yeet
   };
   return values;
 }
@@ -462,6 +477,11 @@ inline const char * const *EnumNamesQuickChatSelection() {
     "Custom_Compliments_proud",
     "Custom_Compliments_GC",
     "Custom_Compliments_Pro",
+    "Custom_Excuses_Lag",
+    "Custom_Excuses_GhostInputs",
+    "Custom_Excuses_Rigged",
+    "Custom_Toxic_MafiaPlays",
+    "Custom_Exclamation_Yeet",
     nullptr
   };
   return names;
@@ -539,17 +559,19 @@ enum GameMode {
   GameMode_Dropshot = 2,
   GameMode_Hockey = 3,
   GameMode_Rumble = 4,
+  GameMode_Heatseeker = 5,
   GameMode_MIN = GameMode_Soccer,
-  GameMode_MAX = GameMode_Rumble
+  GameMode_MAX = GameMode_Heatseeker
 };
 
-inline const GameMode (&EnumValuesGameMode())[5] {
+inline const GameMode (&EnumValuesGameMode())[6] {
   static const GameMode values[] = {
     GameMode_Soccer,
     GameMode_Hoops,
     GameMode_Dropshot,
     GameMode_Hockey,
-    GameMode_Rumble
+    GameMode_Rumble,
+    GameMode_Heatseeker
   };
   return values;
 }
@@ -561,6 +583,7 @@ inline const char * const *EnumNamesGameMode() {
     "Dropshot",
     "Hockey",
     "Rumble",
+    "Heatseeker",
     nullptr
   };
   return names;
@@ -610,11 +633,15 @@ enum GameMap {
   GameMap_Hoops_DunkHouse = 35,
   GameMap_DropShot_Core707 = 36,
   GameMap_ThrowbackStadium = 37,
+  GameMap_ForbiddenTemple = 38,
+  GameMap_RivalsArena = 39,
+  GameMap_Farmstead_Night = 40,
+  GameMap_SaltyShores_Night = 41,
   GameMap_MIN = GameMap_DFHStadium,
-  GameMap_MAX = GameMap_ThrowbackStadium
+  GameMap_MAX = GameMap_SaltyShores_Night
 };
 
-inline const GameMap (&EnumValuesGameMap())[38] {
+inline const GameMap (&EnumValuesGameMap())[42] {
   static const GameMap values[] = {
     GameMap_DFHStadium,
     GameMap_Mannfield,
@@ -653,7 +680,11 @@ inline const GameMap (&EnumValuesGameMap())[38] {
     GameMap_UtopiaRetro,
     GameMap_Hoops_DunkHouse,
     GameMap_DropShot_Core707,
-    GameMap_ThrowbackStadium
+    GameMap_ThrowbackStadium,
+    GameMap_ForbiddenTemple,
+    GameMap_RivalsArena,
+    GameMap_Farmstead_Night,
+    GameMap_SaltyShores_Night
   };
   return values;
 }
@@ -698,6 +729,10 @@ inline const char * const *EnumNamesGameMap() {
     "Hoops_DunkHouse",
     "DropShot_Core707",
     "ThrowbackStadium",
+    "ForbiddenTemple",
+    "RivalsArena",
+    "Farmstead_Night",
+    "SaltyShores_Night",
     nullptr
   };
   return names;
@@ -2069,7 +2104,8 @@ struct PlayerInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_TEAM = 22,
     VT_BOOST = 24,
     VT_HITBOX = 26,
-    VT_HITBOXOFFSET = 28
+    VT_HITBOXOFFSET = 28,
+    VT_SPAWNID = 30
   };
   const Physics *physics() const {
     return GetPointer<const Physics *>(VT_PHYSICS);
@@ -2114,6 +2150,11 @@ struct PlayerInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const Vector3 *hitboxOffset() const {
     return GetStruct<const Vector3 *>(VT_HITBOXOFFSET);
   }
+  /// In the case where the requested player index is not available, spawnId will help
+  /// the framework figure out what index was actually assigned to this player instead.
+  int32_t spawnId() const {
+    return GetField<int32_t>(VT_SPAWNID, 0);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PHYSICS) &&
@@ -2133,6 +2174,7 @@ struct PlayerInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyOffset(verifier, VT_HITBOX) &&
            verifier.VerifyTable(hitbox()) &&
            VerifyField<Vector3>(verifier, VT_HITBOXOFFSET) &&
+           VerifyField<int32_t>(verifier, VT_SPAWNID) &&
            verifier.EndTable();
   }
 };
@@ -2179,6 +2221,9 @@ struct PlayerInfoBuilder {
   void add_hitboxOffset(const Vector3 *hitboxOffset) {
     fbb_.AddStruct(PlayerInfo::VT_HITBOXOFFSET, hitboxOffset);
   }
+  void add_spawnId(int32_t spawnId) {
+    fbb_.AddElement<int32_t>(PlayerInfo::VT_SPAWNID, spawnId, 0);
+  }
   explicit PlayerInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -2205,8 +2250,10 @@ inline flatbuffers::Offset<PlayerInfo> CreatePlayerInfo(
     int32_t team = 0,
     int32_t boost = 0,
     flatbuffers::Offset<BoxShape> hitbox = 0,
-    const Vector3 *hitboxOffset = 0) {
+    const Vector3 *hitboxOffset = 0,
+    int32_t spawnId = 0) {
   PlayerInfoBuilder builder_(_fbb);
+  builder_.add_spawnId(spawnId);
   builder_.add_hitboxOffset(hitboxOffset);
   builder_.add_hitbox(hitbox);
   builder_.add_boost(boost);
@@ -2237,7 +2284,8 @@ inline flatbuffers::Offset<PlayerInfo> CreatePlayerInfoDirect(
     int32_t team = 0,
     int32_t boost = 0,
     flatbuffers::Offset<BoxShape> hitbox = 0,
-    const Vector3 *hitboxOffset = 0) {
+    const Vector3 *hitboxOffset = 0,
+    int32_t spawnId = 0) {
   return rlbot::flat::CreatePlayerInfo(
       _fbb,
       physics,
@@ -2252,7 +2300,8 @@ inline flatbuffers::Offset<PlayerInfo> CreatePlayerInfoDirect(
       team,
       boost,
       hitbox,
-      hitboxOffset);
+      hitboxOffset,
+      spawnId);
 }
 
 struct DropShotBallInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -3595,7 +3644,9 @@ inline flatbuffers::Offset<DesiredBoostState> CreateDesiredBoostState(
 struct DesiredGameInfoState FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_WORLDGRAVITYZ = 4,
-    VT_GAMESPEED = 6
+    VT_GAMESPEED = 6,
+    VT_PAUSED = 8,
+    VT_ENDMATCH = 10
   };
   const Float *worldGravityZ() const {
     return GetStruct<const Float *>(VT_WORLDGRAVITYZ);
@@ -3603,10 +3654,18 @@ struct DesiredGameInfoState FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table
   const Float *gameSpeed() const {
     return GetStruct<const Float *>(VT_GAMESPEED);
   }
+  const Bool *paused() const {
+    return GetStruct<const Bool *>(VT_PAUSED);
+  }
+  const Bool *endMatch() const {
+    return GetStruct<const Bool *>(VT_ENDMATCH);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<Float>(verifier, VT_WORLDGRAVITYZ) &&
            VerifyField<Float>(verifier, VT_GAMESPEED) &&
+           VerifyField<Bool>(verifier, VT_PAUSED) &&
+           VerifyField<Bool>(verifier, VT_ENDMATCH) &&
            verifier.EndTable();
   }
 };
@@ -3619,6 +3678,12 @@ struct DesiredGameInfoStateBuilder {
   }
   void add_gameSpeed(const Float *gameSpeed) {
     fbb_.AddStruct(DesiredGameInfoState::VT_GAMESPEED, gameSpeed);
+  }
+  void add_paused(const Bool *paused) {
+    fbb_.AddStruct(DesiredGameInfoState::VT_PAUSED, paused);
+  }
+  void add_endMatch(const Bool *endMatch) {
+    fbb_.AddStruct(DesiredGameInfoState::VT_ENDMATCH, endMatch);
   }
   explicit DesiredGameInfoStateBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -3635,8 +3700,12 @@ struct DesiredGameInfoStateBuilder {
 inline flatbuffers::Offset<DesiredGameInfoState> CreateDesiredGameInfoState(
     flatbuffers::FlatBufferBuilder &_fbb,
     const Float *worldGravityZ = 0,
-    const Float *gameSpeed = 0) {
+    const Float *gameSpeed = 0,
+    const Bool *paused = 0,
+    const Bool *endMatch = 0) {
   DesiredGameInfoStateBuilder builder_(_fbb);
+  builder_.add_endMatch(endMatch);
+  builder_.add_paused(paused);
   builder_.add_gameSpeed(gameSpeed);
   builder_.add_worldGravityZ(worldGravityZ);
   return builder_.Finish();
@@ -4620,7 +4689,9 @@ struct PlayerLoadout FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_ENGINEAUDIOID = 24,
     VT_TRAILSID = 26,
     VT_GOALEXPLOSIONID = 28,
-    VT_LOADOUTPAINT = 30
+    VT_LOADOUTPAINT = 30,
+    VT_PRIMARYCOLORLOOKUP = 32,
+    VT_SECONDARYCOLORLOOKUP = 34
   };
   int32_t teamColorId() const {
     return GetField<int32_t>(VT_TEAMCOLORID, 0);
@@ -4664,6 +4735,16 @@ struct PlayerLoadout FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const LoadoutPaint *loadoutPaint() const {
     return GetPointer<const LoadoutPaint *>(VT_LOADOUTPAINT);
   }
+  /// Sets the primary color of the car to the swatch that most closely matches the provided
+  /// RGB color value. If set, this overrides teamColorId.
+  const Color *primaryColorLookup() const {
+    return GetPointer<const Color *>(VT_PRIMARYCOLORLOOKUP);
+  }
+  /// Sets the secondary color of the car to the swatch that most closely matches the provided
+  /// RGB color value. If set, this overrides customColorId.
+  const Color *secondaryColorLookup() const {
+    return GetPointer<const Color *>(VT_SECONDARYCOLORLOOKUP);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_TEAMCOLORID) &&
@@ -4681,6 +4762,10 @@ struct PlayerLoadout FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<int32_t>(verifier, VT_GOALEXPLOSIONID) &&
            VerifyOffset(verifier, VT_LOADOUTPAINT) &&
            verifier.VerifyTable(loadoutPaint()) &&
+           VerifyOffset(verifier, VT_PRIMARYCOLORLOOKUP) &&
+           verifier.VerifyTable(primaryColorLookup()) &&
+           VerifyOffset(verifier, VT_SECONDARYCOLORLOOKUP) &&
+           verifier.VerifyTable(secondaryColorLookup()) &&
            verifier.EndTable();
   }
 };
@@ -4730,6 +4815,12 @@ struct PlayerLoadoutBuilder {
   void add_loadoutPaint(flatbuffers::Offset<LoadoutPaint> loadoutPaint) {
     fbb_.AddOffset(PlayerLoadout::VT_LOADOUTPAINT, loadoutPaint);
   }
+  void add_primaryColorLookup(flatbuffers::Offset<Color> primaryColorLookup) {
+    fbb_.AddOffset(PlayerLoadout::VT_PRIMARYCOLORLOOKUP, primaryColorLookup);
+  }
+  void add_secondaryColorLookup(flatbuffers::Offset<Color> secondaryColorLookup) {
+    fbb_.AddOffset(PlayerLoadout::VT_SECONDARYCOLORLOOKUP, secondaryColorLookup);
+  }
   explicit PlayerLoadoutBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -4757,8 +4848,12 @@ inline flatbuffers::Offset<PlayerLoadout> CreatePlayerLoadout(
     int32_t engineAudioId = 0,
     int32_t trailsId = 0,
     int32_t goalExplosionId = 0,
-    flatbuffers::Offset<LoadoutPaint> loadoutPaint = 0) {
+    flatbuffers::Offset<LoadoutPaint> loadoutPaint = 0,
+    flatbuffers::Offset<Color> primaryColorLookup = 0,
+    flatbuffers::Offset<Color> secondaryColorLookup = 0) {
   PlayerLoadoutBuilder builder_(_fbb);
+  builder_.add_secondaryColorLookup(secondaryColorLookup);
+  builder_.add_primaryColorLookup(primaryColorLookup);
   builder_.add_loadoutPaint(loadoutPaint);
   builder_.add_goalExplosionId(goalExplosionId);
   builder_.add_trailsId(trailsId);
@@ -4893,7 +4988,8 @@ struct PlayerConfiguration FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table 
     VT_VARIETY = 6,
     VT_NAME = 8,
     VT_TEAM = 10,
-    VT_LOADOUT = 12
+    VT_LOADOUT = 12,
+    VT_SPAWNID = 14
   };
   PlayerClass variety_type() const {
     return static_cast<PlayerClass>(GetField<uint8_t>(VT_VARIETY_TYPE, 0));
@@ -4923,6 +5019,11 @@ struct PlayerConfiguration FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table 
   const PlayerLoadout *loadout() const {
     return GetPointer<const PlayerLoadout *>(VT_LOADOUT);
   }
+  /// In the case where the requested player index is not available, spawnId will help
+  /// the framework figure out what index was actually assigned to this player instead.
+  int32_t spawnId() const {
+    return GetField<int32_t>(VT_SPAWNID, 0);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_VARIETY_TYPE) &&
@@ -4933,6 +5034,7 @@ struct PlayerConfiguration FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table 
            VerifyField<int32_t>(verifier, VT_TEAM) &&
            VerifyOffset(verifier, VT_LOADOUT) &&
            verifier.VerifyTable(loadout()) &&
+           VerifyField<int32_t>(verifier, VT_SPAWNID) &&
            verifier.EndTable();
   }
 };
@@ -4971,6 +5073,9 @@ struct PlayerConfigurationBuilder {
   void add_loadout(flatbuffers::Offset<PlayerLoadout> loadout) {
     fbb_.AddOffset(PlayerConfiguration::VT_LOADOUT, loadout);
   }
+  void add_spawnId(int32_t spawnId) {
+    fbb_.AddElement<int32_t>(PlayerConfiguration::VT_SPAWNID, spawnId, 0);
+  }
   explicit PlayerConfigurationBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -4989,8 +5094,10 @@ inline flatbuffers::Offset<PlayerConfiguration> CreatePlayerConfiguration(
     flatbuffers::Offset<void> variety = 0,
     flatbuffers::Offset<flatbuffers::String> name = 0,
     int32_t team = 0,
-    flatbuffers::Offset<PlayerLoadout> loadout = 0) {
+    flatbuffers::Offset<PlayerLoadout> loadout = 0,
+    int32_t spawnId = 0) {
   PlayerConfigurationBuilder builder_(_fbb);
+  builder_.add_spawnId(spawnId);
   builder_.add_loadout(loadout);
   builder_.add_team(team);
   builder_.add_name(name);
@@ -5005,14 +5112,16 @@ inline flatbuffers::Offset<PlayerConfiguration> CreatePlayerConfigurationDirect(
     flatbuffers::Offset<void> variety = 0,
     const char *name = nullptr,
     int32_t team = 0,
-    flatbuffers::Offset<PlayerLoadout> loadout = 0) {
+    flatbuffers::Offset<PlayerLoadout> loadout = 0,
+    int32_t spawnId = 0) {
   return rlbot::flat::CreatePlayerConfiguration(
       _fbb,
       variety_type,
       variety,
       name ? _fbb.CreateString(name) : 0,
       team,
-      loadout);
+      loadout,
+      spawnId);
 }
 
 struct MutatorSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {

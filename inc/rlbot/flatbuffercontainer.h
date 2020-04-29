@@ -60,6 +60,7 @@ public:
     flatbuffercontainer.size = 0;
   }
 
+  const type *getRoot() const { return flatbuffer; }
   const type *operator->() const { return flatbuffer; }
 };
 } // namespace rlbot
