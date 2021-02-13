@@ -11,6 +11,7 @@ typedef ByteBuffer (*ByteBufferFunc)(void);
 typedef void (*VoidFunc)(void *);
 typedef int (*SendPacketFunc)(void *, int);
 typedef ByteBuffer (*ReceiveQuickChatFunc)(int, int, int);
+typedef int (*CommsFunc)(int, bool, bool, bool);
 
 BoolFunc _isInitialized;
 VoidFunc _free;
@@ -26,6 +27,8 @@ SendPacketFunc _renderGroup;
 SendPacketFunc _sendQuickChat;
 SendPacketFunc _setGameState;
 SendPacketFunc _startMatchFlatbuffer;
+CommsFunc _startTcpCommunication;
+BoolFunc _isReadyForCommunication;
 
 bool Interface::isLoaded = false;
 
@@ -58,6 +61,10 @@ void Interface::LoadInterface(std::string dll) {
       (SendPacketFunc)platform::GetFunctionAddress(handle, "SetGameState");
   _startMatchFlatbuffer = (SendPacketFunc)platform::GetFunctionAddress(
       handle, "StartMatchFlatbuffer");
+  _startTcpCommunication = (CommsFunc)platform::GetFunctionAddress(
+          handle, "StartTcpCommunication");
+  _isReadyForCommunication = (BoolFunc)platform::GetFunctionAddress(
+          handle, "IsReadyForCommunication");
 
   isLoaded = true;
 }
@@ -128,5 +135,13 @@ int Interface::StartMatch(MatchSettings settings) {
   builder.Finish(settings.BuildFlatBuffer(builder));
 
   return _startMatchFlatbuffer(builder.GetBufferPointer(), builder.GetSize());
+}
+
+int Interface::StartTcpCommunication(int port, bool wantsBallPredictions, bool wantsQuickChat, bool wantsGameMessages) {
+    return _startTcpCommunication(port, wantsBallPredictions, wantsQuickChat, wantsGameMessages);
+}
+
+bool Interface::IsReadyForCommunication() {
+    return _isReadyForCommunication();
 }
 } // namespace rlbot

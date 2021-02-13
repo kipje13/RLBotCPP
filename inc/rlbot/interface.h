@@ -49,5 +49,7 @@ public:
                            int botIndex, bool teamOnly);
   static int SetGameState(GameState state);
   static int StartMatch(MatchSettings settings);
+  static int StartTcpCommunication(int port, bool wantsBallPredictions, bool wantsQuickChat, bool wantsGameMessages);
+  static bool IsReadyForCommunication();
 };
 } // namespace rlbot
