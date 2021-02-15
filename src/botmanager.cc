@@ -1,4 +1,6 @@
 #include "rlbot/botmanager.h"
+#include <chrono>
+#include <thread>
 
 namespace rlbot {
 BotManager::BotManager(Bot *(*botfactory)(int, int, std::string)) {
@@ -15,10 +17,16 @@ void BotManager::StartBotServer(uint16_t port) {
 }
 
 void BotManager::RecieveMessage(Message message) {
+  using namespace std::chrono_literals;
   if (message.command == Command::Add) {
     if (!Interface::IsInterfaceLoaded()) {
       Interface::LoadInterface(message.dll_dir + platform::fileSeperator +
                                DLLNAME);
+      Interface::StartTcpCommunication(23234, true, true, true);
+      std::cout << "CPP bot manager waiting for the interface to connect..." << std::endl;
+      while (!Interface::IsReadyForCommunication()) {
+        std::this_thread::sleep_for(50ms);
+      }
     }
     AddBot(message.index, message.team, message.name);
   } else if (message.command == Command::Remove) {

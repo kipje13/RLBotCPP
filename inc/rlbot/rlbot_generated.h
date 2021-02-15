@@ -121,6 +121,18 @@ struct MatchSettings;
 
 struct QuickChatMessages;
 
+struct ReadyMessage;
+
+struct PlayerStatEvent;
+
+struct PlayerSpectate;
+
+struct PlayerInputChange;
+
+struct GameMessageWrapper;
+
+struct MessagePacket;
+
 enum CollisionShape {
   CollisionShape_NONE = 0,
   CollisionShape_BoxShape = 1,
@@ -637,11 +649,12 @@ enum GameMap {
   GameMap_RivalsArena = 39,
   GameMap_Farmstead_Night = 40,
   GameMap_SaltyShores_Night = 41,
+  GameMap_NeonFields = 42,
   GameMap_MIN = GameMap_DFHStadium,
-  GameMap_MAX = GameMap_SaltyShores_Night
+  GameMap_MAX = GameMap_NeonFields
 };
 
-inline const GameMap (&EnumValuesGameMap())[42] {
+inline const GameMap (&EnumValuesGameMap())[43] {
   static const GameMap values[] = {
     GameMap_DFHStadium,
     GameMap_Mannfield,
@@ -684,7 +697,8 @@ inline const GameMap (&EnumValuesGameMap())[42] {
     GameMap_ForbiddenTemple,
     GameMap_RivalsArena,
     GameMap_Farmstead_Night,
-    GameMap_SaltyShores_Night
+    GameMap_SaltyShores_Night,
+    GameMap_NeonFields
   };
   return values;
 }
@@ -733,6 +747,7 @@ inline const char * const *EnumNamesGameMap() {
     "RivalsArena",
     "Farmstead_Night",
     "SaltyShores_Night",
+    "NeonFields",
     nullptr
   };
   return names;
@@ -1350,6 +1365,60 @@ inline const char *EnumNameExistingMatchBehavior(ExistingMatchBehavior e) {
   const size_t index = static_cast<int>(e);
   return EnumNamesExistingMatchBehavior()[index];
 }
+
+enum GameMessage {
+  GameMessage_NONE = 0,
+  GameMessage_PlayerStatEvent = 1,
+  GameMessage_PlayerSpectate = 2,
+  GameMessage_PlayerInputChange = 3,
+  GameMessage_MIN = GameMessage_NONE,
+  GameMessage_MAX = GameMessage_PlayerInputChange
+};
+
+inline const GameMessage (&EnumValuesGameMessage())[4] {
+  static const GameMessage values[] = {
+    GameMessage_NONE,
+    GameMessage_PlayerStatEvent,
+    GameMessage_PlayerSpectate,
+    GameMessage_PlayerInputChange
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesGameMessage() {
+  static const char * const names[] = {
+    "NONE",
+    "PlayerStatEvent",
+    "PlayerSpectate",
+    "PlayerInputChange",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameGameMessage(GameMessage e) {
+  const size_t index = static_cast<int>(e);
+  return EnumNamesGameMessage()[index];
+}
+
+template<typename T> struct GameMessageTraits {
+  static const GameMessage enum_value = GameMessage_NONE;
+};
+
+template<> struct GameMessageTraits<PlayerStatEvent> {
+  static const GameMessage enum_value = GameMessage_PlayerStatEvent;
+};
+
+template<> struct GameMessageTraits<PlayerSpectate> {
+  static const GameMessage enum_value = GameMessage_PlayerSpectate;
+};
+
+template<> struct GameMessageTraits<PlayerInputChange> {
+  static const GameMessage enum_value = GameMessage_PlayerInputChange;
+};
+
+bool VerifyGameMessage(flatbuffers::Verifier &verifier, const void *obj, GameMessage type);
+bool VerifyGameMessageVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types);
 
 MANUALLY_ALIGNED_STRUCT(4) Vector3 FLATBUFFERS_FINAL_CLASS {
  private:
@@ -2573,7 +2642,8 @@ struct GameInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_ISKICKOFFPAUSE = 14,
     VT_ISMATCHENDED = 16,
     VT_WORLDGRAVITYZ = 18,
-    VT_GAMESPEED = 20
+    VT_GAMESPEED = 20,
+    VT_FRAMENUM = 22
   };
   float secondsElapsed() const {
     return GetField<float>(VT_SECONDSELAPSED, 0.0f);
@@ -2608,6 +2678,12 @@ struct GameInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   float gameSpeed() const {
     return GetField<float>(VT_GAMESPEED, 0.0f);
   }
+  /// Tracks the number of physics frames the game has computed.
+  /// May increase by more than one across consecutive packets.
+  /// Data type will roll over after 207 days at 120Hz.
+  int32_t frameNum() const {
+    return GetField<int32_t>(VT_FRAMENUM, 0);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<float>(verifier, VT_SECONDSELAPSED) &&
@@ -2619,6 +2695,7 @@ struct GameInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<uint8_t>(verifier, VT_ISMATCHENDED) &&
            VerifyField<float>(verifier, VT_WORLDGRAVITYZ) &&
            VerifyField<float>(verifier, VT_GAMESPEED) &&
+           VerifyField<int32_t>(verifier, VT_FRAMENUM) &&
            verifier.EndTable();
   }
 };
@@ -2653,6 +2730,9 @@ struct GameInfoBuilder {
   void add_gameSpeed(float gameSpeed) {
     fbb_.AddElement<float>(GameInfo::VT_GAMESPEED, gameSpeed, 0.0f);
   }
+  void add_frameNum(int32_t frameNum) {
+    fbb_.AddElement<int32_t>(GameInfo::VT_FRAMENUM, frameNum, 0);
+  }
   explicit GameInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -2675,8 +2755,10 @@ inline flatbuffers::Offset<GameInfo> CreateGameInfo(
     bool isKickoffPause = false,
     bool isMatchEnded = false,
     float worldGravityZ = 0.0f,
-    float gameSpeed = 0.0f) {
+    float gameSpeed = 0.0f,
+    int32_t frameNum = 0) {
   GameInfoBuilder builder_(_fbb);
+  builder_.add_frameNum(frameNum);
   builder_.add_gameSpeed(gameSpeed);
   builder_.add_worldGravityZ(worldGravityZ);
   builder_.add_gameTimeRemaining(gameTimeRemaining);
@@ -5323,7 +5405,11 @@ struct MatchSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_INSTANTSTART = 12,
     VT_MUTATORSETTINGS = 14,
     VT_EXISTINGMATCHBEHAVIOR = 16,
-    VT_ENABLELOCKSTEP = 18
+    VT_ENABLELOCKSTEP = 18,
+    VT_ENABLERENDERING = 20,
+    VT_ENABLESTATESETTING = 22,
+    VT_AUTOSAVEREPLAY = 24,
+    VT_GAMEMAPUPK = 26
   };
   const flatbuffers::Vector<flatbuffers::Offset<PlayerConfiguration>> *playerConfigurations() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<PlayerConfiguration>> *>(VT_PLAYERCONFIGURATIONS);
@@ -5349,6 +5435,23 @@ struct MatchSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool enableLockstep() const {
     return GetField<uint8_t>(VT_ENABLELOCKSTEP, 0) != 0;
   }
+  bool enableRendering() const {
+    return GetField<uint8_t>(VT_ENABLERENDERING, 0) != 0;
+  }
+  bool enableStateSetting() const {
+    return GetField<uint8_t>(VT_ENABLESTATESETTING, 0) != 0;
+  }
+  bool autoSaveReplay() const {
+    return GetField<uint8_t>(VT_AUTOSAVEREPLAY, 0) != 0;
+  }
+  /// The name of a upk file, like UtopiaStadium_P, which should be loaded.
+  /// If specified, this overrides gameMap. On Steam version of Rocket League,
+  /// this can be used to load custom map files, but on Epic version it only
+  /// works on the Psyonix maps. Still useful because maintaining the gameMap
+  /// enum as new Psyonix maps are added is annoying.
+  const flatbuffers::String *gameMapUpk() const {
+    return GetPointer<const flatbuffers::String *>(VT_GAMEMAPUPK);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PLAYERCONFIGURATIONS) &&
@@ -5362,6 +5465,11 @@ struct MatchSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyTable(mutatorSettings()) &&
            VerifyField<int8_t>(verifier, VT_EXISTINGMATCHBEHAVIOR) &&
            VerifyField<uint8_t>(verifier, VT_ENABLELOCKSTEP) &&
+           VerifyField<uint8_t>(verifier, VT_ENABLERENDERING) &&
+           VerifyField<uint8_t>(verifier, VT_ENABLESTATESETTING) &&
+           VerifyField<uint8_t>(verifier, VT_AUTOSAVEREPLAY) &&
+           VerifyOffset(verifier, VT_GAMEMAPUPK) &&
+           verifier.Verify(gameMapUpk()) &&
            verifier.EndTable();
   }
 };
@@ -5393,6 +5501,18 @@ struct MatchSettingsBuilder {
   void add_enableLockstep(bool enableLockstep) {
     fbb_.AddElement<uint8_t>(MatchSettings::VT_ENABLELOCKSTEP, static_cast<uint8_t>(enableLockstep), 0);
   }
+  void add_enableRendering(bool enableRendering) {
+    fbb_.AddElement<uint8_t>(MatchSettings::VT_ENABLERENDERING, static_cast<uint8_t>(enableRendering), 0);
+  }
+  void add_enableStateSetting(bool enableStateSetting) {
+    fbb_.AddElement<uint8_t>(MatchSettings::VT_ENABLESTATESETTING, static_cast<uint8_t>(enableStateSetting), 0);
+  }
+  void add_autoSaveReplay(bool autoSaveReplay) {
+    fbb_.AddElement<uint8_t>(MatchSettings::VT_AUTOSAVEREPLAY, static_cast<uint8_t>(autoSaveReplay), 0);
+  }
+  void add_gameMapUpk(flatbuffers::Offset<flatbuffers::String> gameMapUpk) {
+    fbb_.AddOffset(MatchSettings::VT_GAMEMAPUPK, gameMapUpk);
+  }
   explicit MatchSettingsBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -5414,10 +5534,18 @@ inline flatbuffers::Offset<MatchSettings> CreateMatchSettings(
     bool instantStart = false,
     flatbuffers::Offset<MutatorSettings> mutatorSettings = 0,
     ExistingMatchBehavior existingMatchBehavior = ExistingMatchBehavior_Restart_If_Different,
-    bool enableLockstep = false) {
+    bool enableLockstep = false,
+    bool enableRendering = false,
+    bool enableStateSetting = false,
+    bool autoSaveReplay = false,
+    flatbuffers::Offset<flatbuffers::String> gameMapUpk = 0) {
   MatchSettingsBuilder builder_(_fbb);
+  builder_.add_gameMapUpk(gameMapUpk);
   builder_.add_mutatorSettings(mutatorSettings);
   builder_.add_playerConfigurations(playerConfigurations);
+  builder_.add_autoSaveReplay(autoSaveReplay);
+  builder_.add_enableStateSetting(enableStateSetting);
+  builder_.add_enableRendering(enableRendering);
   builder_.add_enableLockstep(enableLockstep);
   builder_.add_existingMatchBehavior(existingMatchBehavior);
   builder_.add_instantStart(instantStart);
@@ -5436,7 +5564,11 @@ inline flatbuffers::Offset<MatchSettings> CreateMatchSettingsDirect(
     bool instantStart = false,
     flatbuffers::Offset<MutatorSettings> mutatorSettings = 0,
     ExistingMatchBehavior existingMatchBehavior = ExistingMatchBehavior_Restart_If_Different,
-    bool enableLockstep = false) {
+    bool enableLockstep = false,
+    bool enableRendering = false,
+    bool enableStateSetting = false,
+    bool autoSaveReplay = false,
+    const char *gameMapUpk = nullptr) {
   return rlbot::flat::CreateMatchSettings(
       _fbb,
       playerConfigurations ? _fbb.CreateVector<flatbuffers::Offset<PlayerConfiguration>>(*playerConfigurations) : 0,
@@ -5446,7 +5578,11 @@ inline flatbuffers::Offset<MatchSettings> CreateMatchSettingsDirect(
       instantStart,
       mutatorSettings,
       existingMatchBehavior,
-      enableLockstep);
+      enableLockstep,
+      enableRendering,
+      enableStateSetting,
+      autoSaveReplay,
+      gameMapUpk ? _fbb.CreateString(gameMapUpk) : 0);
 }
 
 struct QuickChatMessages FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -5497,6 +5633,406 @@ inline flatbuffers::Offset<QuickChatMessages> CreateQuickChatMessagesDirect(
   return rlbot::flat::CreateQuickChatMessages(
       _fbb,
       messages ? _fbb.CreateVector<flatbuffers::Offset<QuickChat>>(*messages) : 0);
+}
+
+/// Sent when connecting to RLBot to indicate what type of messages are desired.
+/// This could be sent by a bot, or a bot manager governing several bots, an
+/// overlay, or any other utility that connects to the RLBot process.
+struct ReadyMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_WANTSBALLPREDICTIONS = 4,
+    VT_WANTSQUICKCHAT = 6,
+    VT_WANTSGAMEMESSAGES = 8
+  };
+  bool wantsBallPredictions() const {
+    return GetField<uint8_t>(VT_WANTSBALLPREDICTIONS, 0) != 0;
+  }
+  bool wantsQuickChat() const {
+    return GetField<uint8_t>(VT_WANTSQUICKCHAT, 0) != 0;
+  }
+  bool wantsGameMessages() const {
+    return GetField<uint8_t>(VT_WANTSGAMEMESSAGES, 0) != 0;
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_WANTSBALLPREDICTIONS) &&
+           VerifyField<uint8_t>(verifier, VT_WANTSQUICKCHAT) &&
+           VerifyField<uint8_t>(verifier, VT_WANTSGAMEMESSAGES) &&
+           verifier.EndTable();
+  }
+};
+
+struct ReadyMessageBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_wantsBallPredictions(bool wantsBallPredictions) {
+    fbb_.AddElement<uint8_t>(ReadyMessage::VT_WANTSBALLPREDICTIONS, static_cast<uint8_t>(wantsBallPredictions), 0);
+  }
+  void add_wantsQuickChat(bool wantsQuickChat) {
+    fbb_.AddElement<uint8_t>(ReadyMessage::VT_WANTSQUICKCHAT, static_cast<uint8_t>(wantsQuickChat), 0);
+  }
+  void add_wantsGameMessages(bool wantsGameMessages) {
+    fbb_.AddElement<uint8_t>(ReadyMessage::VT_WANTSGAMEMESSAGES, static_cast<uint8_t>(wantsGameMessages), 0);
+  }
+  explicit ReadyMessageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ReadyMessageBuilder &operator=(const ReadyMessageBuilder &);
+  flatbuffers::Offset<ReadyMessage> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<ReadyMessage>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<ReadyMessage> CreateReadyMessage(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    bool wantsBallPredictions = false,
+    bool wantsQuickChat = false,
+    bool wantsGameMessages = false) {
+  ReadyMessageBuilder builder_(_fbb);
+  builder_.add_wantsGameMessages(wantsGameMessages);
+  builder_.add_wantsQuickChat(wantsQuickChat);
+  builder_.add_wantsBallPredictions(wantsBallPredictions);
+  return builder_.Finish();
+}
+
+/// Notification that a player triggers some in-game event, such as:
+///		Win, Loss, TimePlayed;
+///		Shot, Assist, Center, Clear, PoolShot;
+///		Goal, AerialGoal, BicycleGoal, BulletGoal, BackwardsGoal, LongGoal, OvertimeGoal, TurtleGoal;
+///		AerialHit, BicycleHit, BulletHit, /*BackwardsHit,*/ JuggleHit, FirstTouch, BallHit;
+///		Save, EpicSave, FreezeSave;
+///		HatTrick, Savior, Playmaker, MVP;
+///		FastestGoal, SlowestGoal, FurthestGoal, OwnGoal;
+///		MostBallTouches, FewestBallTouches, MostBoostPickups, FewestBoostPickups, BoostPickups;
+///		CarTouches, Demolition, Demolish;
+///		LowFive, HighFive;
+struct PlayerStatEvent FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_PLAYERINDEX = 4,
+    VT_STATTYPE = 6
+  };
+  /// index of the player associated with the event
+  int32_t playerIndex() const {
+    return GetField<int32_t>(VT_PLAYERINDEX, 0);
+  }
+  /// Event type
+  const flatbuffers::String *statType() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATTYPE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int32_t>(verifier, VT_PLAYERINDEX) &&
+           VerifyOffset(verifier, VT_STATTYPE) &&
+           verifier.Verify(statType()) &&
+           verifier.EndTable();
+  }
+};
+
+struct PlayerStatEventBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_playerIndex(int32_t playerIndex) {
+    fbb_.AddElement<int32_t>(PlayerStatEvent::VT_PLAYERINDEX, playerIndex, 0);
+  }
+  void add_statType(flatbuffers::Offset<flatbuffers::String> statType) {
+    fbb_.AddOffset(PlayerStatEvent::VT_STATTYPE, statType);
+  }
+  explicit PlayerStatEventBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  PlayerStatEventBuilder &operator=(const PlayerStatEventBuilder &);
+  flatbuffers::Offset<PlayerStatEvent> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<PlayerStatEvent>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PlayerStatEvent> CreatePlayerStatEvent(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t playerIndex = 0,
+    flatbuffers::Offset<flatbuffers::String> statType = 0) {
+  PlayerStatEventBuilder builder_(_fbb);
+  builder_.add_statType(statType);
+  builder_.add_playerIndex(playerIndex);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<PlayerStatEvent> CreatePlayerStatEventDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t playerIndex = 0,
+    const char *statType = nullptr) {
+  return rlbot::flat::CreatePlayerStatEvent(
+      _fbb,
+      playerIndex,
+      statType ? _fbb.CreateString(statType) : 0);
+}
+
+/// Notification when the local player is spectating another player.
+struct PlayerSpectate FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_PLAYERINDEX = 4
+  };
+  /// index of the player that is being spectated. Will be -1 if not spectating anyone.
+  int32_t playerIndex() const {
+    return GetField<int32_t>(VT_PLAYERINDEX, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int32_t>(verifier, VT_PLAYERINDEX) &&
+           verifier.EndTable();
+  }
+};
+
+struct PlayerSpectateBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_playerIndex(int32_t playerIndex) {
+    fbb_.AddElement<int32_t>(PlayerSpectate::VT_PLAYERINDEX, playerIndex, 0);
+  }
+  explicit PlayerSpectateBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  PlayerSpectateBuilder &operator=(const PlayerSpectateBuilder &);
+  flatbuffers::Offset<PlayerSpectate> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<PlayerSpectate>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PlayerSpectate> CreatePlayerSpectate(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t playerIndex = 0) {
+  PlayerSpectateBuilder builder_(_fbb);
+  builder_.add_playerIndex(playerIndex);
+  return builder_.Finish();
+}
+
+/// Rocket League is notifying us that some player has moved their controller. This is an *output*
+struct PlayerInputChange FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_PLAYERINDEX = 4,
+    VT_CONTROLLERSTATE = 6,
+    VT_DODGEFORWARD = 8,
+    VT_DODGERIGHT = 10
+  };
+  int32_t playerIndex() const {
+    return GetField<int32_t>(VT_PLAYERINDEX, 0);
+  }
+  const ControllerState *controllerState() const {
+    return GetPointer<const ControllerState *>(VT_CONTROLLERSTATE);
+  }
+  float dodgeForward() const {
+    return GetField<float>(VT_DODGEFORWARD, 0.0f);
+  }
+  float dodgeRight() const {
+    return GetField<float>(VT_DODGERIGHT, 0.0f);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int32_t>(verifier, VT_PLAYERINDEX) &&
+           VerifyOffset(verifier, VT_CONTROLLERSTATE) &&
+           verifier.VerifyTable(controllerState()) &&
+           VerifyField<float>(verifier, VT_DODGEFORWARD) &&
+           VerifyField<float>(verifier, VT_DODGERIGHT) &&
+           verifier.EndTable();
+  }
+};
+
+struct PlayerInputChangeBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_playerIndex(int32_t playerIndex) {
+    fbb_.AddElement<int32_t>(PlayerInputChange::VT_PLAYERINDEX, playerIndex, 0);
+  }
+  void add_controllerState(flatbuffers::Offset<ControllerState> controllerState) {
+    fbb_.AddOffset(PlayerInputChange::VT_CONTROLLERSTATE, controllerState);
+  }
+  void add_dodgeForward(float dodgeForward) {
+    fbb_.AddElement<float>(PlayerInputChange::VT_DODGEFORWARD, dodgeForward, 0.0f);
+  }
+  void add_dodgeRight(float dodgeRight) {
+    fbb_.AddElement<float>(PlayerInputChange::VT_DODGERIGHT, dodgeRight, 0.0f);
+  }
+  explicit PlayerInputChangeBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  PlayerInputChangeBuilder &operator=(const PlayerInputChangeBuilder &);
+  flatbuffers::Offset<PlayerInputChange> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<PlayerInputChange>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PlayerInputChange> CreatePlayerInputChange(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t playerIndex = 0,
+    flatbuffers::Offset<ControllerState> controllerState = 0,
+    float dodgeForward = 0.0f,
+    float dodgeRight = 0.0f) {
+  PlayerInputChangeBuilder builder_(_fbb);
+  builder_.add_dodgeRight(dodgeRight);
+  builder_.add_dodgeForward(dodgeForward);
+  builder_.add_controllerState(controllerState);
+  builder_.add_playerIndex(playerIndex);
+  return builder_.Finish();
+}
+
+struct GameMessageWrapper FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_MESSAGE_TYPE = 4,
+    VT_MESSAGE = 6
+  };
+  GameMessage Message_type() const {
+    return static_cast<GameMessage>(GetField<uint8_t>(VT_MESSAGE_TYPE, 0));
+  }
+  const void *Message() const {
+    return GetPointer<const void *>(VT_MESSAGE);
+  }
+  template<typename T> const T *Message_as() const;
+  const PlayerStatEvent *Message_as_PlayerStatEvent() const {
+    return Message_type() == GameMessage_PlayerStatEvent ? static_cast<const PlayerStatEvent *>(Message()) : nullptr;
+  }
+  const PlayerSpectate *Message_as_PlayerSpectate() const {
+    return Message_type() == GameMessage_PlayerSpectate ? static_cast<const PlayerSpectate *>(Message()) : nullptr;
+  }
+  const PlayerInputChange *Message_as_PlayerInputChange() const {
+    return Message_type() == GameMessage_PlayerInputChange ? static_cast<const PlayerInputChange *>(Message()) : nullptr;
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_MESSAGE_TYPE) &&
+           VerifyOffset(verifier, VT_MESSAGE) &&
+           VerifyGameMessage(verifier, Message(), Message_type()) &&
+           verifier.EndTable();
+  }
+};
+
+template<> inline const PlayerStatEvent *GameMessageWrapper::Message_as<PlayerStatEvent>() const {
+  return Message_as_PlayerStatEvent();
+}
+
+template<> inline const PlayerSpectate *GameMessageWrapper::Message_as<PlayerSpectate>() const {
+  return Message_as_PlayerSpectate();
+}
+
+template<> inline const PlayerInputChange *GameMessageWrapper::Message_as<PlayerInputChange>() const {
+  return Message_as_PlayerInputChange();
+}
+
+struct GameMessageWrapperBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_Message_type(GameMessage Message_type) {
+    fbb_.AddElement<uint8_t>(GameMessageWrapper::VT_MESSAGE_TYPE, static_cast<uint8_t>(Message_type), 0);
+  }
+  void add_Message(flatbuffers::Offset<void> Message) {
+    fbb_.AddOffset(GameMessageWrapper::VT_MESSAGE, Message);
+  }
+  explicit GameMessageWrapperBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  GameMessageWrapperBuilder &operator=(const GameMessageWrapperBuilder &);
+  flatbuffers::Offset<GameMessageWrapper> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<GameMessageWrapper>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<GameMessageWrapper> CreateGameMessageWrapper(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    GameMessage Message_type = GameMessage_NONE,
+    flatbuffers::Offset<void> Message = 0) {
+  GameMessageWrapperBuilder builder_(_fbb);
+  builder_.add_Message(Message);
+  builder_.add_Message_type(Message_type);
+  return builder_.Finish();
+}
+
+/// We have some very small messages that are only a few bytes but potentially sent at high frequency.
+/// Bundle them into a packet to reduce the overhead of sending data over TCP.
+struct MessagePacket FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_MESSAGES = 4,
+    VT_GAMESECONDS = 6,
+    VT_FRAMENUM = 8
+  };
+  const flatbuffers::Vector<flatbuffers::Offset<GameMessageWrapper>> *messages() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<GameMessageWrapper>> *>(VT_MESSAGES);
+  }
+  float gameSeconds() const {
+    return GetField<float>(VT_GAMESECONDS, 0.0f);
+  }
+  int32_t frameNum() const {
+    return GetField<int32_t>(VT_FRAMENUM, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_MESSAGES) &&
+           verifier.Verify(messages()) &&
+           verifier.VerifyVectorOfTables(messages()) &&
+           VerifyField<float>(verifier, VT_GAMESECONDS) &&
+           VerifyField<int32_t>(verifier, VT_FRAMENUM) &&
+           verifier.EndTable();
+  }
+};
+
+struct MessagePacketBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_messages(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<GameMessageWrapper>>> messages) {
+    fbb_.AddOffset(MessagePacket::VT_MESSAGES, messages);
+  }
+  void add_gameSeconds(float gameSeconds) {
+    fbb_.AddElement<float>(MessagePacket::VT_GAMESECONDS, gameSeconds, 0.0f);
+  }
+  void add_frameNum(int32_t frameNum) {
+    fbb_.AddElement<int32_t>(MessagePacket::VT_FRAMENUM, frameNum, 0);
+  }
+  explicit MessagePacketBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  MessagePacketBuilder &operator=(const MessagePacketBuilder &);
+  flatbuffers::Offset<MessagePacket> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<MessagePacket>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<MessagePacket> CreateMessagePacket(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<GameMessageWrapper>>> messages = 0,
+    float gameSeconds = 0.0f,
+    int32_t frameNum = 0) {
+  MessagePacketBuilder builder_(_fbb);
+  builder_.add_frameNum(frameNum);
+  builder_.add_gameSeconds(gameSeconds);
+  builder_.add_messages(messages);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<MessagePacket> CreateMessagePacketDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<GameMessageWrapper>> *messages = nullptr,
+    float gameSeconds = 0.0f,
+    int32_t frameNum = 0) {
+  return rlbot::flat::CreateMessagePacket(
+      _fbb,
+      messages ? _fbb.CreateVector<flatbuffers::Offset<GameMessageWrapper>>(*messages) : 0,
+      gameSeconds,
+      frameNum);
 }
 
 inline bool VerifyCollisionShape(flatbuffers::Verifier &verifier, const void *obj, CollisionShape type) {
@@ -5563,6 +6099,39 @@ inline bool VerifyPlayerClassVector(flatbuffers::Verifier &verifier, const flatb
   for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
     if (!VerifyPlayerClass(
         verifier,  values->Get(i), types->GetEnum<PlayerClass>(i))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+inline bool VerifyGameMessage(flatbuffers::Verifier &verifier, const void *obj, GameMessage type) {
+  switch (type) {
+    case GameMessage_NONE: {
+      return true;
+    }
+    case GameMessage_PlayerStatEvent: {
+      auto ptr = reinterpret_cast<const PlayerStatEvent *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case GameMessage_PlayerSpectate: {
+      auto ptr = reinterpret_cast<const PlayerSpectate *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case GameMessage_PlayerInputChange: {
+      auto ptr = reinterpret_cast<const PlayerInputChange *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    default: return false;
+  }
+}
+
+inline bool VerifyGameMessageVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types) {
+  if (!values || !types) return !values && !types;
+  if (values->size() != types->size()) return false;
+  for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+    if (!VerifyGameMessage(
+        verifier,  values->Get(i), types->GetEnum<GameMessage>(i))) {
       return false;
     }
   }
