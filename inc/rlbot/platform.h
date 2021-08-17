@@ -23,6 +23,11 @@ struct ModuleHandle {
 };
 
 const char fileSeperator = '\\';
+template <typename T>
+T GetFunctionAddress(ModuleHandle handle, const char *procname) {
+  return (T) GetProcAddress(handle.platform_specific, procname);
+}
+
 #endif
 
 #ifdef OS_UNIX
@@ -31,10 +36,10 @@ struct ModuleHandle {
 };
 
 const char fileSeperator = '/';
+void* GetFunctionAddress(ModuleHandle handle, const char *procname);
 #endif
 
 ModuleHandle LoadDll(const char *filename);
-void *GetFunctionAddress(ModuleHandle handle, const char *procname);
 void FreeDll(ModuleHandle handle);
 
 void SetWorkingDirectory(std::string directory);

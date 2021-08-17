@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <string>
 
 namespace rlbot {
 enum Command { Add, Remove };

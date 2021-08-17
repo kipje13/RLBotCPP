@@ -36,34 +36,34 @@ void Interface::LoadInterface(std::string dll) {
   platform::ModuleHandle handle = platform::LoadDll(dll.c_str());
 
   _isInitialized =
-      (BoolFunc)platform::GetFunctionAddress(handle, "IsInitialized");
-  _free = (VoidFunc)platform::GetFunctionAddress(handle, "Free");
+      platform::GetFunctionAddress<BoolFunc>(handle, "IsInitialized");
+  _free = platform::GetFunctionAddress<VoidFunc>(handle, "Free");
 
   _updateLiveDataPacketFlatbuffer =
-      (ByteBufferFunc)platform::GetFunctionAddress(
+      platform::GetFunctionAddress<ByteBufferFunc>(
           handle, "UpdateLiveDataPacketFlatbuffer");
-  _updateFieldInfoFlatbuffer = (ByteBufferFunc)platform::GetFunctionAddress(
+  _updateFieldInfoFlatbuffer = platform::GetFunctionAddress<ByteBufferFunc>(
       handle, "UpdateFieldInfoFlatbuffer");
   _getBallPrediction =
-      (ByteBufferFunc)platform::GetFunctionAddress(handle, "GetBallPrediction");
+      platform::GetFunctionAddress<ByteBufferFunc>(handle, "GetBallPrediction");
   _getMatchSettings =
-      (ByteBufferFunc)platform::GetFunctionAddress(handle, "GetMatchSettings");
+      platform::GetFunctionAddress<ByteBufferFunc>(handle, "GetMatchSettings");
   _receiveChat =
-      (ReceiveQuickChatFunc)platform::GetFunctionAddress(handle, "ReceiveChat");
+      platform::GetFunctionAddress<ReceiveQuickChatFunc>(handle, "ReceiveChat");
 
-  _updatePlayerInputFlatbuffer = (SendPacketFunc)platform::GetFunctionAddress(
+  _updatePlayerInputFlatbuffer = platform::GetFunctionAddress<SendPacketFunc>(
       handle, "UpdatePlayerInputFlatbuffer");
   _renderGroup =
-      (SendPacketFunc)platform::GetFunctionAddress(handle, "RenderGroup");
+      platform::GetFunctionAddress<SendPacketFunc>(handle, "RenderGroup");
   _sendQuickChat =
-      (SendPacketFunc)platform::GetFunctionAddress(handle, "SendQuickChat");
+      platform::GetFunctionAddress<SendPacketFunc>(handle, "SendQuickChat");
   _setGameState =
-      (SendPacketFunc)platform::GetFunctionAddress(handle, "SetGameState");
-  _startMatchFlatbuffer = (SendPacketFunc)platform::GetFunctionAddress(
+      platform::GetFunctionAddress<SendPacketFunc>(handle, "SetGameState");
+  _startMatchFlatbuffer = platform::GetFunctionAddress<SendPacketFunc>(
       handle, "StartMatchFlatbuffer");
-  _startTcpCommunication = (CommsFunc)platform::GetFunctionAddress(
+  _startTcpCommunication = platform::GetFunctionAddress<CommsFunc>(
           handle, "StartTcpCommunication");
-  _isReadyForCommunication = (BoolFunc)platform::GetFunctionAddress(
+  _isReadyForCommunication = platform::GetFunctionAddress<BoolFunc>(
           handle, "IsReadyForCommunication");
 
   isLoaded = true;
