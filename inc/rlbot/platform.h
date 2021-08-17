@@ -36,7 +36,10 @@ struct ModuleHandle {
 };
 
 const char fileSeperator = '/';
-void* GetFunctionAddress(ModuleHandle handle, const char *procname);
+template <typename T>
+T GetFunctionAddress(ModuleHandle handle, const char *procname) {
+  return (T) dlsym(handle.platform_specific, procname);
+}
 #endif
 
 ModuleHandle LoadDll(const char *filename);

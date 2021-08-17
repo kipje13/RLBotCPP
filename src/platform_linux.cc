@@ -15,10 +15,6 @@ ModuleHandle LoadDll(const char *filename) {
   return handle;
 }
 
-void *GetFunctionAddress(ModuleHandle handle, const char *procname) {
-  return dlsym(handle.platform_specific, procname);
-}
-
 void FreeDll(ModuleHandle handle) { dlclose(handle.platform_specific); }
 
 void SetWorkingDirectory(std::string directory) { chdir(directory.c_str()); }
