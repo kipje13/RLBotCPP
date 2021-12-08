@@ -41,9 +41,19 @@ set(header_files
   ${PROJECT_SOURCE_DIR}/inc/rlbot/statesetting.h
 )
 
+add_library(asio INTERFACE)
+target_include_directories(asio INTERFACE dependencies/asio/include)
+
+add_definitions (-DASIO_STANDALONE)
+add_definitions (-D_WEBSOCKETPP_CPP11_STL_)
+add_library(websocketpp INTERFACE)
+target_include_directories(asio INTERFACE dependencies/websocketpp)
+
 add_library(RLBotCPP STATIC ${source_files} ${header_files})
 target_include_directories(RLBotCPP PUBLIC inc lib/inc)
 target_compile_features(RLBotCPP PUBLIC cxx_std_17)
+
+target_link_libraries(RLBotCPP PUBLIC asio websocketpp)
 
 #link linux libraries
 if (UNIX)
