@@ -5,8 +5,12 @@
 #include "rlbot/interface.h"
 #include "rlbot/rlbot_generated.h"
 
+#include "json.hpp"
+
+using message_ptr = server::message_ptr;
+
 namespace rlbot {
-Bot::Bot(int _index, int _team, std::string _name) {
+Bot::Bot(int _index, int _team, std::string _name, std::string uri) {
   index = _index;
   team = _team;
   name = _name;
@@ -31,6 +35,14 @@ MatchInfo Bot::GetMatchInfo() {
   MatchInfo matchinfo(buffer);
   Interface::Free(buffer.ptr);
   return matchinfo;
+}
+
+MatchComms::Packet Bot::GetMatchComms() {
+  server matchcomms_connection; 
+  matchcomms_connection.set_message_handler([](websocketpp::connection_hdl hdl, message_ptr msg){
+    // ...
+  });
+  return MatchComms::Packet{};
 }
 
 void Bot::SendQuickChat(rlbot::flat::QuickChatSelection message,
