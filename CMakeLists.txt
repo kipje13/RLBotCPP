@@ -42,7 +42,7 @@ set(header_files
 )
 
 add_library(asio INTERFACE)
-target_include_directories(asio INTERFACE dependencies/asio/include)
+target_include_directories(asio INTERFACE dependencies/asio/asio/include)
 
 add_definitions (-DASIO_STANDALONE)
 add_definitions (-D_WEBSOCKETPP_CPP11_STL_)
