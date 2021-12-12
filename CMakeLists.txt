@@ -17,6 +17,7 @@ set(source_files
   ${PROJECT_SOURCE_DIR}/src/sockets_linux.cc
   ${PROJECT_SOURCE_DIR}/src/sockets_windows.cc
   ${PROJECT_SOURCE_DIR}/src/statesetting.cc
+  ${PROJECT_SOURCE_DIR}/lib/src/easywsclient.cpp
 )
 
 set(header_files
@@ -39,6 +40,7 @@ set(header_files
   ${PROJECT_SOURCE_DIR}/inc/rlbot/server.h
   ${PROJECT_SOURCE_DIR}/inc/rlbot/sockets.h
   ${PROJECT_SOURCE_DIR}/inc/rlbot/statesetting.h
+  ${PROJECT_SOURCE_DIR}/inc/rlbot/matchcomms.h
 )
 
 add_library(RLBotCPP STATIC ${source_files} ${header_files})

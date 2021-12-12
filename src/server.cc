@@ -67,6 +67,9 @@ void Server::Run(uint16_t port, std::function<void(Message)> callback) {
 
       m.name = params[1];
       m.dll_dir = params[4];
+      if (params.size() > 5) {
+        m.matchcomms_url = params[5];
+      }
     } else if (params[0] == "remove") {
       m.command = Command::Remove;
 

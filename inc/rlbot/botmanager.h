@@ -35,7 +35,7 @@ public:
 
   void StartBotServer(uint16_t port);
   void RecieveMessage(Message message);
-  void AddBot(int index, int team, std::string name);
+  void AddBot(int index, int team, std::string name, std::string matchcomms_url);
   void RemoveBot(int index);
 };
 } // namespace rlbot

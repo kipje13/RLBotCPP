@@ -1,6 +1,8 @@
 #include "rlbot/botmanager.h"
 #include <chrono>
+#include <memory>
 #include <thread>
+#include "rlbot/matchcomms.h"
 
 namespace rlbot {
 BotManager::BotManager(Bot *(*botfactory)(int, int, std::string)) {
@@ -28,18 +30,21 @@ void BotManager::RecieveMessage(Message message) {
         std::this_thread::sleep_for(50ms);
       }
     }
-    AddBot(message.index, message.team, message.name);
+      AddBot(message.index, message.team, message.name, message.matchcomms_url);
   } else if (message.command == Command::Remove) {
     RemoveBot(message.index);
   }
 }
 
-void BotManager::AddBot(int index, int team, std::string name) {
+void BotManager::AddBot(int index, int team, std::string name, std::string matchcomms_url) {
   bots_mutex.lock();
 
   if (bots.find(index) == bots.end()) {
-    bots.insert(std::make_pair(
-        index, std::make_unique<BotProcess>(botfactory(index, team, name))));
+    auto bot = botfactory(index, team, name);
+    if (!matchcomms_url.empty()) {
+      bot->matchcomms = std::make_unique<MatchCommsClient>(matchcomms_url);
+    }
+    bots.insert(std::make_pair(index, std::make_unique<BotProcess>(bot)));
 
     bots[index]->Start();
 
