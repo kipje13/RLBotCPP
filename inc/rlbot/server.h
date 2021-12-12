@@ -13,6 +13,7 @@ struct Message {
   int team;
   std::string name;
   std::string dll_dir;
+  std::string matchcomms_url;
 };
 
 class Server {

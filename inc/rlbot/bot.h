@@ -2,6 +2,7 @@
 #include "rlbot/interface.h"
 #include "rlbot/packets.h"
 #include "rlbot/rlbot_generated.h"
+#include "matchcomms.h"
 
 #include <string>
 
@@ -14,6 +15,8 @@ public:
   int index;
   int team;
   std::string name;
+  
+  std::unique_ptr<MatchCommsClient> matchcomms;
 
   Bot(int index, int team, std::string name);
   virtual ~Bot() {}
