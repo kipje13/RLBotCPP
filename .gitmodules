@@ -1,0 +1,6 @@
+[submodule "3rd-party/flatbuffers"]
+	path = 3rd-party/flatbuffers
+	url = https://github.com/google/flatbuffers.git
+[submodule "3rd-party/flatbuffers-schema"]
+	path = 3rd-party/flatbuffers-schema
+	url = https://github.com/RLBot/flatbuffers-schema.git
